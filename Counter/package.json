@@ -1,0 +1,14 @@
+{
+  "name": "Counter",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "15.2.0",
+    "react-native": "0.29.0",
+    "redux": "3.5.2",
+    "react-redux": "4.4.5"
+  }
+}
