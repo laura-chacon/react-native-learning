@@ -3,8 +3,11 @@ import {
   StyleSheet,
   View,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  TextInput
 } from 'react-native';
+
+import EmailForm from './emailForm'
 
 const styles = StyleSheet.create({
   button: {
@@ -15,26 +18,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 3
+  },
+  text: {
+    
   }
 });
 
-export default class Counter extends Component {
+export default class Authentication extends Component {
   constructor(props) {
     super(props);
   }
 
   render() {
-    const { counter, increment, decrement } = this.props;
-
+    const { state, actions } = this.props;
     return (
       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>{counter}</Text>
-        <TouchableOpacity onPress={increment} style={styles.button}>
-          <Text>up</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={decrement} style={styles.button}>
-          <Text>down</Text>
-        </TouchableOpacity>
+        <Text style={styles.text}>GREENY APP</Text>
+        <EmailForm
+          submitEmail = {actions.submitEmail}
+        />
       </View>
     );
   }

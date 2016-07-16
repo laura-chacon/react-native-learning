@@ -1,5 +1,5 @@
-import counter from './counter';
+import authentication from './authentication';
 
 export {
-  counter
+  authentication
 };

@@ -2,29 +2,37 @@
 
 import React, { Component } from 'react';
 import {bindActionCreators} from 'redux';
-import Counter from '../components/counter';
+import Authentication from '../components/authentication';
 import * as actionCreators from '../actions/creators';
 import { connect } from 'react-redux';
 
-class CounterApp extends Component {
+class GreenyApp extends Component {
   constructor(props) {
     super(props);
   }
 
   render() {
     const { state, actions } = this.props;
-    return (
-      <Counter
-        counter={state.count}
-        {...actions} />
-    );
+    if (!state.authentication.isLoggedIn) {
+      return (
+        <Authentication
+          state = {state.authentication}
+          actions = {actions}
+        />
+      );
+    }
+    else {
+      <Text>
+        User is logged in
+      </Text>
+    }
   }
 }
 
 export default connect(state => ({
-    state: state.counter
+    state: state
   }),
   (dispatch) => ({
     actions: bindActionCreators(actionCreators, dispatch)
   })
-)(CounterApp);
+)(GreenyApp);
