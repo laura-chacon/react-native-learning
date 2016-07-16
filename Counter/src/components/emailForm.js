@@ -18,8 +18,11 @@ const styles = StyleSheet.create({
     margin: 3
   },
   textInput: {
-    height: 40,
+    height: 26,
+    width: 200,
     borderColor: 'gray',
+    fontSize: 13,
+    padding: 4,
     borderWidth: 1
   }
 });
@@ -27,7 +30,9 @@ const styles = StyleSheet.create({
 export default class Authentication extends Component {
   constructor(props) {
     super(props);
-    this.state = { text: ''}
+    this.state = {
+      text: null
+    }
   }
 
   render() {
@@ -38,11 +43,12 @@ export default class Authentication extends Component {
           style={styles.textInput}
           onChangeText= {(text) => this.setState({text})}
           value={this.state.text}
+          placeholder="Email"
           keyboardType='email-address'
+          autoCapitalize='none'
+          returnKeyType='next'
+          onSubmitEditing={ () => submitEmail(this.state.text)}
         />
-        <TouchableOpacity onPress={ () => submitEmail(this.state.text)} style={styles.button}>
-          <Text>SUBMIT</Text>
-        </TouchableOpacity>
       </View>
     );
   }
