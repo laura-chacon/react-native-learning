@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import {
+  Animated,
+  Dimensions,
+  Easing,
   Image,
   StyleSheet,
   View,
@@ -11,9 +14,9 @@ import EmailForm from './emailForm'
 import LoginForm from './loginForm'
 
 const EMAIL_FORM = "EMAIL_FORM";
-const FROM_EMAIL_TO_LOGIN_FORM = "FROM_EMAIL_TO_LOGIN_FORM";
+const TRANSITION_TO_LOGIN_FORM = "TRANSITION_TO_LOGIN_FORM";
 const LOGIN_FORM = "LOGIN_FORM";
-const FROM_EMAIL_TO_SIGNUP_FORM = "FROM_EMAIL_TO_SIGNUP_FORM";
+const TRANSITION_TO_SIGNUP_FORM = "TRANSITION_TO_SIGNUP_FORM";
 const SIGNUP_FORM = "SIGNUP_FORM";
 
 const styles = StyleSheet.create({
@@ -58,7 +61,8 @@ export default class Authentication extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stage: EMAIL_FORM
+      stage: EMAIL_FORM,
+      translateAnim: new Animated.Value(0)
     }
   }
 
@@ -66,7 +70,26 @@ export default class Authentication extends Component {
     if (this.state.stage == EMAIL_FORM &&
         this.props.state.uid &&
         this.props.state.isEmailRegistered) {
-      this.setState({stage: FROM_EMAIL_TO_LOGIN_FORM});
+      Animated.timing(
+        this.state.translateAnim,
+        {toValue: 1,
+         duration: 600
+        }
+      ).start();
+      setTimeout(() => this.setState({
+        stage: TRANSITION_TO_LOGIN_FORM,
+        translateAnim: new Animated.Value(0)
+      }), 600);
+    }
+    else if (this.state.stage == TRANSITION_TO_LOGIN_FORM) {
+      Animated.timing(
+        this.state.translateAnim,
+        {toValue: 1,
+         duration: 800,
+         easing: Easing.elastic(1)
+        }
+      ).start();
+      setTimeout(() => this.setState({stage: LOGIN_FORM}), 800);
     }
   }
 
@@ -93,22 +116,26 @@ export default class Authentication extends Component {
   render() {
     const { state, actions } = this.props;
     let view;
+    let {width} = Dimensions.get('window');
     if (this.state.stage == EMAIL_FORM) {
-      view = <EmailForm
-        onSubmit={actions.submitEmail}/>;
+      view = <Animated.View style={{
+          transform: [{translateX: this.state.translateAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, -width]
+          })}]
+        }}>
+          <EmailForm onSubmit={actions.submitEmail}/>
+        </Animated.View>;
     }
-    else if (this.state.stage == FROM_EMAIL_TO_LOGIN_FORM) {
-      // we need to render both email_form and login_form.
-      // login_form should be outside of the screen, to the right.
-      // email_form should be in the center of the screen
-      // then an animation should start which moves both forms to the left.
-      // when the animation ends, we should do:
-      // this.setState({stage: LOGIN_FORM});
-      //
-      // This is temporary code that should be replaced with the animation code:
-      view = <LoginForm
-        onSubmit={(password) => actions.login(state.uid, password)}/>;
-      setTimeout(() => this.setState({stage: LOGIN_FORM}), 500);
+    else if (this.state.stage == TRANSITION_TO_LOGIN_FORM) {
+      view = <Animated.View style={{
+          transform: [{translateX: this.state.translateAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [width, 0]
+          })}]
+        }}>
+          <LoginForm/>
+        </Animated.View>;
     }
     else if (this.state.stage == LOGIN_FORM) {
       view = <LoginForm
