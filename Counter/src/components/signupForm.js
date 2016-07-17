@@ -50,7 +50,7 @@ export default class Authentication extends Component {
           style={styles.textInput}
           onChangeText= {(password) => this.setState({password})}
           value={this.state.password}
-          placeholder="Enter your password"
+          placeholder="Enter your new password"
           placeholderTextColor="floralwhite"
           keyboardType='numeric'
           autoCapitalize='none'
@@ -61,7 +61,7 @@ export default class Authentication extends Component {
         onPress={() => onSubmit(this.state.password)}>
         <Text
           style={styles.buttonText}>
-          LOGIN
+          SIGN UP
         </Text>
       </TouchableOpacity>
       </View>

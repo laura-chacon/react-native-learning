@@ -1,7 +1,6 @@
 import * as types from './types';
 
 export function submitEmail(email) {
-  console.log(email);
   let response = getUserByEmailBackendCall(email);
   if (response.users.length == 0) {
     return {

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 4,
     borderWidth: 1,
-    color: 'white'
+    color: 'white',
   }
 });
 

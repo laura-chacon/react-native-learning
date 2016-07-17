@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import EmailForm from './emailForm'
 import LoginForm from './loginForm'
+import SignupForm from './signupForm'
 
 const EMAIL_FORM = "EMAIL_FORM";
 const TRANSITION_TO_LOGIN_FORM = "TRANSITION_TO_LOGIN_FORM";
@@ -91,6 +92,30 @@ export default class Authentication extends Component {
       ).start();
       setTimeout(() => this.setState({stage: LOGIN_FORM}), 800);
     }
+    else if (this.state.stage == EMAIL_FORM &&
+        this.props.state.uid &&
+        !this.props.state.isEmailRegistered) {
+      Animated.timing(
+        this.state.translateAnim,
+        {toValue: 1,
+         duration: 600
+        }
+      ).start();
+      setTimeout(() => this.setState({
+        stage: TRANSITION_TO_SIGNUP_FORM,
+        translateAnim: new Animated.Value(0)
+      }), 600);
+    }
+    else if (this.state.stage == TRANSITION_TO_SIGNUP_FORM) {
+      Animated.timing(
+        this.state.translateAnim,
+        {toValue: 1,
+         duration: 800,
+         easing: Easing.elastic(1)
+        }
+      ).start();
+      setTimeout(() => this.setState({stage: SIGNUP_FORM}), 800);
+    }
   }
 
   componentDidMount() {
@@ -140,6 +165,20 @@ export default class Authentication extends Component {
     else if (this.state.stage == LOGIN_FORM) {
       view = <LoginForm
         onSubmit={(password) => actions.login(state.uid, password)}/>;
+    }
+    else if (this.state.stage == TRANSITION_TO_SIGNUP_FORM) {
+      view = <Animated.View style={{
+        transform: [{translateX: this.state.translateAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: [width, 0]
+          })}]
+        }}>
+        <SignupForm/>
+      </Animated.View>;
+    }
+    else if (this.state.stage == SIGNUP_FORM) {
+      view = <SignupForm
+        onSubmit={(password) => actions.signup(state.uid, state.email, password)}/>;
     }
     return this._render(view);
   }
