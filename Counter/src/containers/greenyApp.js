@@ -14,17 +14,9 @@ class GreenyApp extends Component {
   render() {
     const { state, actions } = this.props;
     if (!state.authentication.isLoggedIn) {
-      return (
-        <Authentication
-          state = {state.authentication}
-          actions = {actions}
-        />
-      );
-    }
-    else {
-      <Text>
-        User is logged in
-      </Text>
+      return <Authentication
+        state={state.authentication}
+        actions={actions}/>;
     }
   }
 }

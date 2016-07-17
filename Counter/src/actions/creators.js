@@ -49,7 +49,7 @@ export function signup(uid, email, password) {
 }
 
 function getUserByEmailBackendCall(email) {
-  return getUserNotFoundMock();
+  return getUserFoundMock();
 }
 
 function getUserNotFoundMock() {

@@ -8,6 +8,15 @@ import {
 } from 'react-native';
 
 const styles = StyleSheet.create({
+  button: {
+    width: 100,
+    height: 30,
+    padding: 10,
+    backgroundColor: 'lightgray',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 3
+  },
   textInput: {
     height: 36,
     width: 200,
@@ -23,7 +32,7 @@ export default class Authentication extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: null
+      password: null
     }
   }
 
@@ -33,14 +42,14 @@ export default class Authentication extends Component {
       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <TextInput
           style={styles.textInput}
-          onChangeText= {(text) => this.setState({text})}
-          value={this.state.text}
-          placeholder="Enter your email"
+          onChangeText= {(password) => this.setState({password})}
+          value={this.state.password}
+          placeholder="Enter your password"
           placeholderTextColor="floralwhite"
-          keyboardType='email-address'
+          keyboardType='numeric'
           autoCapitalize='none'
           returnKeyType='next'
-          onSubmitEditing={ () => onSubmit(this.state.text)}
+          onSubmitEditing={ () => onSubmit(this.state.password)}
         />
       </View>
     );
