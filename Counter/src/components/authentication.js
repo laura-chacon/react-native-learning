@@ -67,54 +67,48 @@ export default class Authentication extends Component {
     }
   }
 
+  _animateEmailFormOut(nextStage) {
+    setTimeout(() => {
+      Animated.timing(
+        this.state.translateAnim,
+        {toValue: 1,
+        duration: 600
+        }
+      ).start();
+    }, 300);
+    setTimeout(() => this.setState({
+      stage: nextStage,
+      translateAnim: new Animated.Value(0)
+    }), 900);
+  }
+
+  _animateNextFormIn(nextStage) {
+    Animated.timing(
+      this.state.translateAnim,
+      {toValue: 1,
+       duration: 800,
+       easing: Easing.elastic(1)
+      }
+    ).start();
+    setTimeout(() => this.setState({stage: nextStage}), 800);
+  }
+
   _maybeGoToNextForm() {
     if (this.state.stage == EMAIL_FORM &&
         this.props.state.uid &&
         this.props.state.isEmailRegistered) {
-      Animated.timing(
-        this.state.translateAnim,
-        {toValue: 1,
-         duration: 600
-        }
-      ).start();
-      setTimeout(() => this.setState({
-        stage: TRANSITION_TO_LOGIN_FORM,
-        translateAnim: new Animated.Value(0)
-      }), 600);
+      this._animateEmailFormOut(TRANSITION_TO_LOGIN_FORM);
     }
     else if (this.state.stage == TRANSITION_TO_LOGIN_FORM) {
-      Animated.timing(
-        this.state.translateAnim,
-        {toValue: 1,
-         duration: 800,
-         easing: Easing.elastic(1)
-        }
-      ).start();
-      setTimeout(() => this.setState({stage: LOGIN_FORM}), 800);
+      this._animateNextFormIn(LOGIN_FORM);
     }
     else if (this.state.stage == EMAIL_FORM &&
         this.props.state.uid &&
         !this.props.state.isEmailRegistered) {
-      Animated.timing(
-        this.state.translateAnim,
-        {toValue: 1,
-         duration: 600
-        }
-      ).start();
-      setTimeout(() => this.setState({
-        stage: TRANSITION_TO_SIGNUP_FORM,
-        translateAnim: new Animated.Value(0)
-      }), 600);
+      this._animateEmailFormOut(TRANSITION_TO_SIGNUP_FORM);
     }
     else if (this.state.stage == TRANSITION_TO_SIGNUP_FORM) {
-      Animated.timing(
-        this.state.translateAnim,
-        {toValue: 1,
-         duration: 800,
-         easing: Easing.elastic(1)
-        }
-      ).start();
-      setTimeout(() => this.setState({stage: SIGNUP_FORM}), 800);
+      this._animateNextFormIn(SIGNUP_FORM);
     }
   }
 

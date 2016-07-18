@@ -9,6 +9,7 @@
     "react": "15.2.0",
     "react-native": "0.29.0",
     "redux": "3.5.2",
-    "react-redux": "4.4.5"
+    "react-redux": "4.4.5",
+    "react-native-keyboard-spacer": "0.3.0"
   }
 }

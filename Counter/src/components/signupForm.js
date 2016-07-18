@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import {
   StyleSheet,
   View,
@@ -56,14 +57,15 @@ export default class Authentication extends Component {
           autoCapitalize='none'
           returnKeyType='next'
         />
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => onSubmit(this.state.password)}>
-        <Text
-          style={styles.buttonText}>
-          SIGN UP
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => onSubmit(this.state.password)}>
+          <Text
+            style={styles.buttonText}>
+            SIGN UP
+          </Text>
+        </TouchableOpacity>
+        <KeyboardSpacer/>
       </View>
     );
   }

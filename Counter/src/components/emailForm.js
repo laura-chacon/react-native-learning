@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import {
   StyleSheet,
   View,
@@ -42,6 +43,7 @@ export default class Authentication extends Component {
           returnKeyType='next'
           onSubmitEditing={ () => onSubmit(this.state.text)}
         />
+      <KeyboardSpacer/>
       </View>
     );
   }
