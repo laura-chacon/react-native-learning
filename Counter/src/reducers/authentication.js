@@ -40,6 +40,7 @@ export default function authentication(state = initialState, action = {}) {
       return {
         ...state,
         token: action.token,
+        isLoggedIn: true,
         error: null
       };
     default:
