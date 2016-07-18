@@ -40,12 +40,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 35,
     color: 'white',
-    marginBottom: 15
+    marginBottom: 15,
+    marginTop: 50
   },
   logo: {
-    width: 44,
-    height: 44,
-    marginTop: 15
+    width: 72,
+    height: 72,
+    marginTop: 40
   },
   button: {
     width: 100,
@@ -124,7 +125,7 @@ export default class Authentication extends Component {
     return <View style={styles.container}>
       <View style={styles.app_name_logo_container}>
         <Text style={styles.app_name}>GREENY</Text>
-        <Image style={styles.logo} source={require('../img/logo.png')}/>
+        <Image style={styles.logo} source={require('../img/logoapp_white.png')}/>
       </View>
       <View style={styles.form_container}>
         {view}
