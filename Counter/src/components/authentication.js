@@ -164,7 +164,8 @@ export default class Authentication extends Component {
     }
     else if (this.state.stage == LOGIN_FORM) {
       view = <LoginForm
-        onSubmit={(password) => actions.login(state.uid, password)}/>;
+        onSubmit={(password) => actions.login(state.uid, password)}
+        error={state.error}/>;
     }
     else if (this.state.stage == TRANSITION_TO_SIGNUP_FORM) {
       view = <Animated.View style={{

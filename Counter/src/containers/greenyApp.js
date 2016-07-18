@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import {bindActionCreators} from 'redux';
 import Authentication from '../components/authentication';
+import Root from '../components/root'
 import * as actionCreators from '../actions/creators';
 import { connect } from 'react-redux';
 
@@ -16,6 +17,11 @@ class GreenyApp extends Component {
     if (!state.authentication.isLoggedIn) {
       return <Authentication
         state={state.authentication}
+        actions={actions}/>;
+    }
+    else {
+      return <Root
+        state={state.root}
         actions={actions}/>;
     }
   }

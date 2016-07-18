@@ -31,6 +31,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontFamily: 'Helvetica'
+  },
+  error_container: {
+    marginTop: 10,
+    height: 30
+  },
+  text: {
+    color: 'red'
   }
 });
 
@@ -43,7 +50,16 @@ export default class Authentication extends Component {
   }
 
   render() {
-    const { onSubmit } = this.props;
+    const { onSubmit, error } = this.props;
+    let errorView;
+    if (error != null) {
+      errorView = <Text style={styles.text}>
+        Incorrect password
+      </Text>;
+    }
+    else {
+      errorView = false;
+    }
     return (
       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <TextInput
@@ -64,6 +80,9 @@ export default class Authentication extends Component {
           LOGIN
         </Text>
       </TouchableOpacity>
+      <View style={styles.error_container}>
+        {errorView}
+      </View>
       </View>
     );
   }

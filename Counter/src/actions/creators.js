@@ -42,13 +42,13 @@ export function signup(uid, email, password) {
   if (response.token) {
     return {
       type: types.SIGNUP,
-      token: response.token,
+      token: response.token
     };
   }
 }
 
 function getUserByEmailBackendCall(email) {
-  return getUserFoundMock();
+  return getUserNotFoundMock();
 }
 
 function getUserNotFoundMock() {
