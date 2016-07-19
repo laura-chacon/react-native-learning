@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
 import {
-  Animated,
-  Dimensions,
-  Easing,
-  Image,
   StyleSheet,
   View,
-  Text,
-  TouchableOpacity,
-  TextInput
+  Text
 } from 'react-native';
+import TabBar from './tabBar';
+
+const ACTION_TAB = "ACTION_TAB";
+const HISTORY_TAB = "HISTORY_TAB";
+const FACT_TAB = "FACT_TAB";
 
 const styles = StyleSheet.create({
-  container: {
+  parent: {
     flex: 1,
-    backgroundColor: 'lightseagreen'
+    backgroundColor: "ghostwhite"
+  },
+  contentContainer: {
+    flex: 1
   }
 });
 
@@ -25,10 +27,13 @@ export default class Root extends Component {
 
   render() {
     const { state, actions } = this.props;
-    return <View style={styles.container}>
-      <Text>
-        ROOT
-      </Text>
-    </View>
+    return (
+      <View style={styles.parent}>
+        <View style={styles.contentContainer}>
+          <Text>1</Text>
+        </View>
+        <TabBar
+          onTabPressed={() => {}}/>
+      </View>);
   }
 }
