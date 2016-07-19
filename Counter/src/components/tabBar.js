@@ -8,8 +8,13 @@ import {
 } from 'react-native';
 
 export const HISTORY_TAB = "HISTORY_TAB";
-export const FACT_TAB = "FACT_TAB";
+export const FACTS_TAB = "FACTS_TAB";
 export const ACTION_TAB = "ACTION_TAB";
+
+const HISTORY_TAB_SELECTED_ICON = require('../img/history_blue.png');
+const HISTORY_TAB_UNSELECTED_ICON = require('../img/history_gray.png');
+const FACTS_TAB_SELECTED_ICON = require('../img/facts_blue.png');
+const FACTS_TAB_UNSELECTED_ICON = require('../img/facts_gray.png');
 
 const styles = StyleSheet.create({
   tabBar: {
@@ -67,119 +72,83 @@ export default class TabBar extends Component {
     this.setState({selectedTab: tab});
   }
 
-  _textColor(text, color) {
-    if (color == "gray") {
-      return <Text style={[styles.text, styles.textColorGray]}>{text}</Text>;
-    }
-    else if (color == "blue") {
+  _renderTextColor(text, isSelected) {
+    if (isSelected) {
       return <Text style={[styles.text, styles.textColorBlue]}>{text}</Text>;
+    }
+    else {
+      return <Text style={[styles.text, styles.textColorGray]}>{text}</Text>;
     }
   }
 
-  _icon_container(tab, image, text, color) {
+  _tabToText(tab) {
+    if (tab == HISTORY_TAB) {
+      return "HISTORY";
+    }
+    else if (tab == FACTS_TAB) {
+      return "FACTS";
+    }
+  }
+
+  _tabToImageSource(tab) {
+    if (tab == HISTORY_TAB) {
+      if (this.state.selectedTab == tab) {
+        return HISTORY_TAB_SELECTED_ICON;
+      }
+      else {
+        return HISTORY_TAB_UNSELECTED_ICON;
+      }
+    }
+    else if (tab == FACTS_TAB) {
+      if (this.state.selectedTab == tab) {
+        return FACTS_TAB_SELECTED_ICON;
+      }
+      else {
+        return FACTS_TAB_UNSELECTED_ICON;
+      }
+    }
+  }
+
+  _renderIconContainer(tab) {
+    let isTabSelected = this.state.selectedTab == tab;
     return (
       <TouchableHighlight
         style={styles.icon_container}
-        underlayColor='ghostwhite'
+        underlayColor={null}
         onPress={() => {
           this._onTabPressed(tab);
         }}>
         <View style={{alignItems: 'center', justifyContent: 'center'}}>
-          {image}
-          {this._textColor(text, color)}
+          <Image style={styles.icon}
+            source={this._tabToImageSource(tab)}/>
+          {this._renderTextColor(this._tabToText(tab), isTabSelected)}
         </View>
         </TouchableHighlight>
     );
   }
 
-  _action_icon_container(tab, image) {
+  _renderActionIconContainer() {
     return (
       <TouchableHighlight
         style={styles.action_container}
-        underlayColor='ghostwhite'
+        underlayColor={null}
         onPress={() => {
-          this._onTabPressed(tab);
+          this._onTabPressed(ACTION_TAB);
         }}>
         <View style={styles.action_icon_container}>
-          {image}
+          <Image style={styles.icon}
+            source={require('../img/add_white.png')}/>
         </View>
       </TouchableHighlight>
     );
   }
 
   render() {
-    let view;
-    if(this.state.selectedTab == HISTORY_TAB) {
-      view =
-        <View style={styles.tabBar}>
-          {this._icon_container(
-            HISTORY_TAB,
-            <Image style={styles.icon}
-              source={require('../img/history_blue.png')}/>,
-            "HISTORY",
-            "blue"
-          )}
-          {this._action_icon_container(
-            ACTION_TAB,
-            <Image style={styles.icon}
-              source={require('../img/add_white.png')}/>
-          )}
-          {this._icon_container(
-            FACT_TAB,
-            <Image style={styles.icon}
-              source={require('../img/facts_gray.png')}/>,
-            "FACTS",
-            "gray"
-          )}
-      </View>
-    }
-    else if (this.state.selectedTab == ACTION_TAB) {
-      view =
-        <View style={styles.tabBar}>
-        {this._icon_container(
-          HISTORY_TAB,
-          <Image style={styles.icon}
-            source={require('../img/history_gray.png')}/>,
-          "HISTORY",
-          "gray"
-        )}
-        {this._action_icon_container(
-          ACTION_TAB,
-          <Image style={styles.icon}
-            source={require('../img/add_white.png')}/>
-        )}
-        {this._icon_container(
-          FACT_TAB,
-          <Image style={styles.icon}
-            source={require('../img/facts_gray.png')}/>,
-          "FACTS",
-          "gray"
-        )}
-      </View>
-    }
-    else if (this.state.selectedTab == FACT_TAB) {
-      view = <View style={styles.tabBar}>
-        {this._icon_container(
-          HISTORY_TAB,
-          <Image style={styles.icon}
-            source={require('../img/history_gray.png')}/>,
-          "HISTORY",
-          "gray"
-        )}
-        {this._action_icon_container(
-          ACTION_TAB,
-          <Image style={styles.icon}
-            source={require('../img/add_white.png')}/>
-        )}
-        {this._icon_container(
-          FACT_TAB,
-          <Image style={styles.icon}
-            source={require('../img/facts_blue.png')}/>,
-          "FACTS",
-          "blue"
-        )}
-      </View>
-    }
-    return view;
+    return (
+      <View style={styles.tabBar}>
+        {this._renderIconContainer(HISTORY_TAB)}
+        {this._renderActionIconContainer()}
+        {this._renderIconContainer(FACTS_TAB)}
+      </View>);
   }
 }
