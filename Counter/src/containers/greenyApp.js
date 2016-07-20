@@ -21,7 +21,8 @@ class GreenyApp extends Component {
     }
     else {
       return <Root
-        state={state.root}
+        staticState={state.staticInfo}
+        userState={state.user}
         actions={actions}/>;
     }
   }

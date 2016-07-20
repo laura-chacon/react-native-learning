@@ -30,29 +30,30 @@ export default class Root extends Component {
   }
 
   _renderTabContainer(tab) {
+    const { staticState, userState, actions } = this.props;
     if (tab == ACTION_TAB) {
       return (
         <View style={styles.contentContainer}>
-          <Text>3</Text>
+          <Text>actions</Text>
         </View>
       );
     }
     else if (tab == HISTORY_TAB) {
       return (
         <View style={styles.contentContainer}>
-          <Text>2</Text>
+          <Text>history</Text>
         </View>
       );
     }
     else if (tab == FACTS_TAB) {
       return (
-        <Facts/>
+        <Facts
+          fact={staticState.fact}/>
       );
     }
   }
 
   render() {
-    const { state, actions } = this.props;
     return (
       <View style={styles.parent}>
         <View style={styles.contentContainer}>
