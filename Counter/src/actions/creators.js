@@ -109,7 +109,6 @@ function signupSuccessfulMock() {
 }
 
 export function openApp(staticInfoLastDate) {
-  console.log("open apppppp");
   if (staticInfoLastDate != null && isDateFromToday(staticInfoLastDate)) {
     return {
       type: types.OPEN_APP

@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   icon_name: {
     fontWeight: 'bold',
     fontFamily: 'Helvetica',
-    fontSize: 15,
+    fontSize: 16,
     color: 'lightseagreen'
   },
   textInput_container: {
@@ -48,7 +48,7 @@ export default class Facts extends Component {
           <Text style={styles.icon_name}>Fact of the day:</Text>
           <View style={styles.textInput_container}>
             <Text style={styles.text}>
-              {fact}{"\n"}  
+              {fact}{"\n"}
             </Text>
           </View>
         </View>
