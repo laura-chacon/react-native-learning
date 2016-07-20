@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  Text
+  Text,
+  AppState
 } from 'react-native';
 import TabBar from './tabBar';
 import Facts from './facts'
