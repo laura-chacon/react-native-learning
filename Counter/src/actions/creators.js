@@ -31,7 +31,7 @@ export function login(uid, password) {
       token: response.token,
       loginSuccessful : true,
       nextActionId: nextActionId,
-      history: history,
+      history: history.history,
       fact: staticInfo.fact,
       sections: staticInfo.sections,
       actionTypes: staticInfo.actionTypes
@@ -55,7 +55,7 @@ export function signup(uid, email, password) {
       type: types.SIGNUP,
       token: response.token,
       nextActionId: nextActionId,
-      history: history,
+      history: history.history,
       fact: staticInfo.fact,
       sections: staticInfo.sections,
       actionTypes: staticInfo.actionTypes
@@ -108,19 +108,21 @@ function signupSuccessfulMock() {
   }
 }
 
-export function openApp(staticInfoLastDate) {
+export function openApp(staticInfoLastDate, uid, authToken) {
   if (staticInfoLastDate != null && isDateFromToday(staticInfoLastDate)) {
     return {
-      type: types.OPEN_APP
+      type: types.NO_ACTION
     };
   }
   else {
     let staticInfo = getStaticInfo();
+    let history = getHistoryBackendCall(uid, authToken);
     return {
       type: types.OPEN_APP,
       fact: staticInfo.fact,
       sections: staticInfo.sections,
       actionTypes: staticInfo.actionTypes,
+      history: history.history
     };
   }
 }
@@ -128,9 +130,11 @@ export function openApp(staticInfoLastDate) {
 export function addAction(uid, nextActionId, section, actionType, score, authToken) {
   createActionBackendCall(uid, nextActionId, section, actionType, score, authToken);
   let nextACtionId = getNextActionIdBackendCall(uid);
+  let history = getHistoryBackendCall(uid, authToken);
   return {
     type: types.ADD_ACTION,
-    nextActionId: nextActionId
+    nextActionId: nextActionId,
+    history: history.history
   };
 }
 
@@ -150,7 +154,7 @@ function getNextActionIdBackendCall(uid) {
 }
 
 function isDateFromToday(staticInfoLastDate) {
-  return true;
+  return staticInfoLastDate.toDateString() == (new Date()).toDateString();
 }
 
 function getStaticInfo() {
@@ -169,26 +173,90 @@ function getHistoryBackendCall(uid, authToken) {
     {
       id: "0",
       actionId: "0-1231231",
-      actionType: "foo",
+      actionType: "No eat meat",
       datetime: "2016-07-20",
-      section: "bar",
-      score: "5"
+      section: "Food",
+      score: 5
     },
     {
       id: "1",
       actionId: "1-1231231",
-      actionType: "foo1",
-      datetime: "2016-07-209",
-      section: "bar1",
-      score: "-5"
+      actionType: "Car",
+      datetime: "2016-07-20",
+      section: "Transportation",
+      score: -5
     },
     {
       id: "2",
       actionId: "2-1231231",
-      actionType: "foo2",
+      actionType: "Bath",
       datetime: "2016-07-18",
-      section: "bar2",
-      score: "10"
+      section: "Water",
+      score: -10
+    },
+    {
+      id: "3",
+      actionId: "3-1231231",
+      actionType: "Bike",
+      datetime: "2016-07-19",
+      section: "Transportation",
+      score: 10
+    },
+    {
+      id: "4",
+      actionId: "4-1231231",
+      actionType: "Shower",
+      datetime: "2016-07-18",
+      section: "Water",
+      score: 5
+    },
+    {
+      id: "5",
+      actionId: "5-1231231",
+      actionType: "Bath",
+      datetime: "2016-07-16",
+      section: "Water",
+      score: -10
+    },
+    {
+      id: "6",
+      actionId: "6-1231231",
+      actionType: "Bath",
+      datetime: "2016-07-15",
+      section: "Water",
+      score: -10
+    },
+    {
+      id: "10",
+      actionId: "10-1231231",
+      actionType: "Plane",
+      datetime: "2016-07-15",
+      section: "Transportation",
+      score: -15
+    },
+    {
+      id: "7",
+      actionId: "7-1231231",
+      actionType: "Bath",
+      datetime: "2016-07-12",
+      section: "Water",
+      score: -10
+    },
+    {
+      id: "8",
+      actionId: "8-1231231",
+      actionType: "Bath",
+      datetime: "2016-07-13",
+      section: "Water",
+      score: -10
+    },
+    {
+      id: "9",
+      actionId: "9-1231231",
+      actionType: "Bath",
+      datetime: "2016-07-14",
+      section: "Water",
+      score: -10
     }
   ];
   return {
@@ -229,15 +297,15 @@ function getFactBackendCall() {
     },
     {
     "id": 2,
-    "display": "Aproximadamente un millon de aves y 100.000 mamiferos mueren cada ano solo a causa de desechos plasticos."
+    "display": "Aproximadamente un millón de aves y 100.000 mamíferos mueren cada año solo a causa de desechos plasticos."
     },
     {
     "id": 3,
-    "display": "El contenido de una botella de plastico de un solo uso tiene una durabilidad de medio milenio. Es absurdo y carisimo."
+    "display": "El contenido de una botella de plástico de un solo uso tiene una durabilidad de medio milenio. Es absurdo y carísimo."
     },
     {
     "id": 4,
-    "display": "La contaminacion del aire es el cuarto factor de riesgo de muerte en el mundo y con mucha diferencia el primer factor de riesgo ambiental de enfermedades."
+    "display": "La contaminación del aire es el cuarto factor de riesgo de muerte en el mundo y con mucha diferencia el primer factor de riesgo ambiental de enfermedades."
     }
   ];
   let fact = facts[random];

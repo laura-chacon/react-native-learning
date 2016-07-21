@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import TabBar from './tabBar';
 import Facts from './facts'
+import History from './history'
 
 const ACTION_TAB = "ACTION_TAB";
 const HISTORY_TAB = "HISTORY_TAB";
@@ -18,7 +19,8 @@ const styles = StyleSheet.create({
     backgroundColor: "ghostwhite"
   },
   contentContainer: {
-    flex: 1
+    flex: 1,
+    marginTop: 10
   }
 });
 
@@ -42,7 +44,8 @@ export default class Root extends Component {
     else if (tab == HISTORY_TAB) {
       return (
         <View style={styles.contentContainer}>
-          <Text>history</Text>
+          <History
+            history={userState.history}/>
         </View>
       );
     }

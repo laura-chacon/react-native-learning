@@ -7,20 +7,22 @@ const initialState = {
 };
 
 export default function user(state = initialState, action = {}) {
-  switch (action.type) {
-    case actionTypes.LOGIN:
-      return {
-          ...state,
-          nextActionId: action.nextActionId,
-          history: action.history
-      };
-
-    case actionTypes.ADD_ACTION:
-      return {
+  if (action.type == actionTypes.LOGIN ||
+      action.type == actionTypes.ADD_ACTION ||
+      action.type == actionTypes.SIGNUP) {
+    return {
         ...state,
-        nextActionId: action.nextActionId
-      };
-    default:
-      return state;
+        nextActionId: action.nextActionId,
+        history: action.history
+    };
+  }
+  else if (action.type == actionTypes.OPEN_APP) {
+    return {
+      ...state,
+      history: action.history
+    };
+  }
+  else {
+    return state;
   }
 }
