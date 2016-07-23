@@ -21,15 +21,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   score_container: {
-    flex: 1,
-    alignItems: 'flex-end',
-    marginTop: 10,
-    marginRight: 10
-  },
-  score_text_container: {
-    borderRadius: 15,
-    width: 30,
-    height: 30,
+    width: 20,
+    marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -50,7 +43,7 @@ const styles = StyleSheet.create({
   },
   text_score: {
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: 10,
     color:'white'
   },
   text_action: {
@@ -115,10 +108,19 @@ export default class History extends Component {
     return actionGroups;
   }
 
-  _getListViewSourceData() {
+  _addPositionToGroups(actionGroups) {
+    let fun = function(actionGroup, index) {
+      actionGroup["index"] = index;
+      return actionGroup;
+    }
+    return actionGroups.map(fun);
+  }
+
+  _getActionGroups() {
     let aux = this._groupActionsByDate();
     let actionGroups = Object.values(aux);
-    return this._sortActionGroupsByDate(actionGroups);
+    let sortedActionGroups = this._sortActionGroupsByDate(actionGroups);
+    return this._addPositionToGroups(sortedActionGroups);
   }
 
   _getColorSection(section) {
@@ -163,24 +165,6 @@ export default class History extends Component {
     return actions.map(renderAction);
   }
 
-  _calculateColor(best, worst, score) {
-    if (score == 0) {
-      return worst;
-    }
-    else if (score == MAX_SCORE) {
-      return best;
-    }
-    else if (best == worst) {
-      return best;
-    }
-    else if (best > worst) {
-      return worst + (best - worst) * score / MAX_SCORE;
-    }
-    else {
-      return worst - (worst - best) * score / MAX_SCORE;
-    }
-  }
-
   _getDate(date) {
     var date = new Date(date).toDateString();
     dateSplit = date.split(" ");
@@ -197,7 +181,25 @@ export default class History extends Component {
       year);
   }
 
-  _renderScore(score) {
+  _calculateColor(best, worst, score) {
+    if (score == 0) {
+      return worst;
+    }
+    else if (score == MAX_SCORE) {
+      return best;
+    }
+    else if (best == worst) {
+      return best;
+    }
+    else if (best > worst) {
+      return Math.round(worst + (best - worst) * score / MAX_SCORE);
+    }
+    else {
+      return Math.round(worst - (worst - best) * score / MAX_SCORE);
+    }
+  }
+
+  _scoreToColor(score) {
     /*
     indianred = 205 92 92
     lightgreen = 144 238 144
@@ -209,23 +211,83 @@ export default class History extends Component {
     let red = this._calculateColor(bestColor[0], worstColor[0], auxScore);
     let green = this._calculateColor(bestColor[1], worstColor[1], auxScore);
     let blue = this._calculateColor(bestColor[2], worstColor[2], auxScore);
-    let color = "rgb(" + red + "," + green + "," + blue + ")";
+    return {red, green, blue};
+  }
+
+  _colorObjectToRgb(color) {
+    return "rgb(" + color.red + "," + color.green + "," + color.blue + ")";
+  }
+
+  _colorInBetween(colorIndex1, colorIndex2, indexedColors) {
+    if (colorIndex1 < 0) {
+      return indexedColors[colorIndex2];
+    }
+    else if (colorIndex2 >= indexedColors.length) {
+      return indexedColors[colorIndex1];
+    }
+    else {
+      let color1 = indexedColors[colorIndex1];
+      let color2 = indexedColors[colorIndex2];
+      let middleFun = function(a, b) {
+        let v = a < b ? a + (b - a) / 2 : b + (a - b) / 2;
+        return Math.round(v);
+      }
+      return {
+        red: middleFun(color1.red, color2.red),
+        blue: middleFun(color1.blue, color2.blue),
+        green: middleFun(color1.green, color2.green)
+      };
+    }
+  }
+
+  _linearGradient(specs) {
+    let thisInstance = this;
+    let fun = function(spec) {
+      let v = thisInstance._colorObjectToRgb(spec.color);
+      if (spec.perc) {
+        v += " " + spec.perc + "%";
+      }
+      return v;
+    }
+    let colors = specs.map(fun);
+    return "linear-gradient(0deg," + colors.join(",") + ")"
+  }
+
+  _renderScore(score, rowIndex, indexedColors) {
+    let beginColor = this._colorInBetween(rowIndex, rowIndex+1, indexedColors);
+    let midColor = indexedColors[rowIndex];
+    let endColor = this._colorInBetween(rowIndex, rowIndex+1, indexedColors);
+    let gradient = this._linearGradient([
+        {color: beginColor},
+        {color: midColor, perc: 20},
+        {color: midColor, perc: 80},
+        {color: endColor}
+      ]);
+    let color = this._colorObjectToRgb(midColor);
     return (
-      <View style={styles.score_container}>
-        <View style={[styles.score_text_container, {backgroundColor: color}]}>
-          <Text style={styles.text_score}>
-            {score}
-          </Text>
-        </View>
+      <View style={[styles.score_container, {backgroundColor: color}]}>
+        <Text style={styles.text_score}>
+          {score}
+        </Text>
       </View>
     );
   }
+
+  _indexedColors(actionGroups) {
+    let thisInstance = this;
+    let fun = function(actionGroup) {
+      return thisInstance._scoreToColor(actionGroup.score);
+    }
+    return actionGroups.map(fun);
+  }
+
   _renderListView() {
-    history = this._getListViewSourceData();
+    let actionGroups = this._getActionGroups();
+    let indexedColors = this._indexedColors(actionGroups);
     var dataSource = (new ListView.DataSource({
         rowHasChanged: (r1, r2) => r1 != r2
       }))
-      .cloneWithRows(history);
+      .cloneWithRows(actionGroups);
     return <ListView
       dataSource={dataSource}
       renderRow={(rowData) => {
@@ -241,7 +303,7 @@ export default class History extends Component {
                 {this._renderActions(rowData.actions)}
               </View>
             </View>
-            {this._renderScore(rowData.score)}
+            {this._renderScore(rowData.score, rowData.index, indexedColors)}
           </View>
         );
       }}
@@ -252,6 +314,7 @@ export default class History extends Component {
     return (
       <View style={styles.listview_container}>
         {this._renderListView()}
-      </View>);
+      </View>
+    );
   }
 }

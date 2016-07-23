@@ -283,12 +283,12 @@ function getHistoryBackendCall(uid, authToken) {
       score: -30
     },
     {
-      id: "912",
+      id: "9142",
       actionId: "9-1231231",
-      actionType: "Bike",
-      datetime: "2016-07-09",
-      section: "Transportation",
-      score: 15
+      actionType: "Fish",
+      datetime: "2016-07-07",
+      section: "Food",
+      score: -5
     }
   ];
   return {

@@ -31,7 +31,9 @@ const styles = StyleSheet.create({
   text: {
     height: 150,
     width: 250,
-    fontSize: 15,
+    fontFamily: 'Helvetica',
+    fontSize: 12,
+    color: 'gray',
     textAlign: 'justify'
   }
 });
