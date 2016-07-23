@@ -192,7 +192,7 @@ function getHistoryBackendCall(uid, authToken) {
       actionType: "Bath",
       datetime: "2016-07-18",
       section: "Water",
-      score: -10
+      score: 30
     },
     {
       id: "3",
@@ -216,7 +216,7 @@ function getHistoryBackendCall(uid, authToken) {
       actionType: "Bath",
       datetime: "2016-07-16",
       section: "Water",
-      score: -10
+      score: -30
     },
     {
       id: "6",
@@ -237,10 +237,18 @@ function getHistoryBackendCall(uid, authToken) {
     {
       id: "7",
       actionId: "7-1231231",
-      actionType: "Bath",
+      actionType: "Sweater",
       datetime: "2016-07-12",
-      section: "Water",
-      score: -10
+      section: "Temperature",
+      score: 5
+    },
+    {
+      id: "17",
+      actionId: "7-1231231",
+      actionType: "Heating",
+      datetime: "2016-07-18",
+      section: "Temperature",
+      score: -5
     },
     {
       id: "8",
@@ -257,6 +265,30 @@ function getHistoryBackendCall(uid, authToken) {
       datetime: "2016-07-14",
       section: "Water",
       score: -10
+    },
+    {
+      id: "43",
+      actionId: "9-1231231",
+      actionType: "Heating",
+      datetime: "2016-07-11",
+      section: "Temperature",
+      score: 10
+    },
+    {
+      id: "234",
+      actionId: "9-1231231",
+      actionType: "Bath",
+      datetime: "2016-07-10",
+      section: "Water",
+      score: -30
+    },
+    {
+      id: "912",
+      actionId: "9-1231231",
+      actionType: "Bike",
+      datetime: "2016-07-09",
+      section: "Transportation",
+      score: 15
     }
   ];
   return {
@@ -268,19 +300,19 @@ function getSectionsBackendCall() {
   let sections = [
   		{
     		"id": "food",
-    		"display": "info food"
+    		"display": "Food"
   		},
   		{
     		"id": "water",
-    		"display": "info water"
+    		"display": "Water"
   		},
   		{
     		"id": "transportation",
-    		"display": "info transportation"
+    		"display": "Transportation"
   		},
   		{
-    		"id": "heating and cooling",
-    		"display": "info heating and cooling"
+    		"id": "temperature",
+    		"display": "Temperature"
   		}
   	];
   return {

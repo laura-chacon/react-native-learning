@@ -7,43 +7,62 @@ import {
   ListView
 } from 'react-native';
 
+import * as colors from  './colors';
+
 const styles = StyleSheet.create({
   listview_container: {
     flex: 1,
+    borderTopWidth: 0.5,
+    borderColor: 'lightgray'
   },
   element_listview_container: {
-    borderWidth: 0.5,
+    borderBottomWidth: 0.5,
     borderColor: 'lightgray',
     flexDirection: "row",
   },
   score_container: {
     flex: 1,
+    alignItems: 'flex-end',
+    marginTop: 10,
+    marginRight: 10
+  },
+  score_text_container: {
+    borderRadius: 15,
+    width: 30,
+    height: 30,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderLeftWidth: 1,
-    borderColor: 'grey'
+    justifyContent: 'center'
   },
   date_actions_container: {
     flex: 3,
     flexDirection: 'column',
-    padding: 10
+    padding: 10,
+  },
+  action_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 2
   },
   text_date: {
-    fontWeight: 'bold',
     fontFamily: 'Helvetica',
-    fontSize: 15,
-    color: 'lightseagreen'
+    fontSize: 9,
+    color: 'gray'
   },
   text_score: {
     fontWeight: 'bold',
-    fontSize: 13,
+    fontSize: 12,
     color:'white'
   },
   text_action: {
     fontFamily: 'Helvetica',
-    fontSize: 14,
+    fontSize: 11,
     color: 'gray',
-    paddingTop: 2
+  },
+  box: {
+    width: 9,
+    height: 9,
+    borderRadius: 2,
+    marginRight: 4
   }
 });
 
@@ -102,17 +121,46 @@ export default class History extends Component {
     return this._sortActionGroupsByDate(actionGroups);
   }
 
+  _getColorSection(section) {
+    switch(section) {
+      case "Food":
+        return colors.FOOD_SECTION_COLOR;
+      case "Water":
+        return colors.WATER_SECTION_COLOR;
+      case "Transportation":
+        return colors.TRANSPORTATION_SECTION_COLOR;
+      case "Temperature":
+        return colors.TEMPERATURE_COLOR;
+    }
+  }
+
+  _createSectionBox(section) {
+    let color = this._getColorSection(section);
+    return <View style={[styles.box, {backgroundColor: color}]}></View>;
+  }
+
+  _createActionTypeText(section, actionType) {
+    let color = this._getColorSection(section);
+    return (
+      <Text style={[styles.text_action, {color: color}]}>
+        {actionType}
+      </Text>
+    );
+  }
+
   _renderActions(actions) {
-    var fun = function(action) {
+    let thisInstance = this;
+    var renderAction = function(action) {
       return (
-        <View key={action.actionId}>
-          <Text style={styles.text_action}>
-            {action.actionType}
-          </Text>
+        <View
+          style={styles.action_container}
+          key={action.actionId}>
+          {thisInstance._createSectionBox(action.section)}
+          {thisInstance._createActionTypeText(action.section, action.actionType)}
         </View>
       );
     }
-    return actions.map(fun);
+    return actions.map(renderAction);
   }
 
   _calculateColor(best, worst, score) {
@@ -133,6 +181,22 @@ export default class History extends Component {
     }
   }
 
+  _getDate(date) {
+    var date = new Date(date).toDateString();
+    dateSplit = date.split(" ");
+    let weekDay = 0;
+    let month = 1;
+    let day = 2;
+    let year = 3;
+    weekDay = dateSplit[weekDay].toUpperCase();
+    year = dateSplit[year].split(0)[1];
+    return (
+      weekDay + ", " +
+      dateSplit[day] + " " +
+      dateSplit[month] + " '" +
+      year);
+  }
+
   _renderScore(score) {
     /*
     indianred = 205 92 92
@@ -147,10 +211,12 @@ export default class History extends Component {
     let blue = this._calculateColor(bestColor[2], worstColor[2], auxScore);
     let color = "rgb(" + red + "," + green + "," + blue + ")";
     return (
-      <View style={[styles.score_container, {backgroundColor: color}]}>
-        <Text style={styles.text_score}>
-          {score}
-        </Text>
+      <View style={styles.score_container}>
+        <View style={[styles.score_text_container, {backgroundColor: color}]}>
+          <Text style={styles.text_score}>
+            {score}
+          </Text>
+        </View>
       </View>
     );
   }
@@ -168,7 +234,7 @@ export default class History extends Component {
             <View style={styles.date_actions_container}>
               <View style={styles.section_container}>
                 <Text style={styles.text_date}>
-                  {rowData.date}
+                  {this._getDate(rowData.date)}
                 </Text>
               </View>
               <View style={styles.section_container}>

@@ -13,6 +13,7 @@ import {
 import EmailForm from './emailForm'
 import LoginForm from './loginForm'
 import SignupForm from './signupForm'
+import * as colors from  './colors';
 
 const EMAIL_FORM = "EMAIL_FORM";
 const TRANSITION_TO_LOGIN_FORM = "TRANSITION_TO_LOGIN_FORM";
@@ -23,7 +24,7 @@ const SIGNUP_FORM = "SIGNUP_FORM";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightseagreen'
+    backgroundColor: colors.APP_COLOR
   },
   app_name_logo_container: {
     flex: 1,

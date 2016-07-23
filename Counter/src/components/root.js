@@ -8,6 +8,7 @@ import {
 import TabBar from './tabBar';
 import Facts from './facts'
 import History from './history'
+import * as colors from  './colors';
 
 const ACTION_TAB = "ACTION_TAB";
 const HISTORY_TAB = "HISTORY_TAB";
@@ -16,7 +17,7 @@ const FACTS_TAB = "FACTS_TAB";
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: "ghostwhite"
+    backgroundColor: colors.MAIN_BACKGROUND_COLOR
   },
   contentContainer: {
     flex: 1,

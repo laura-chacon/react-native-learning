@@ -6,6 +6,7 @@ import {
   Text,
   TouchableHighlight
 } from 'react-native';
+import * as colors from  './colors';
 
 export const HISTORY_TAB = "HISTORY_TAB";
 export const FACTS_TAB = "FACTS_TAB";
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
     color: "lightslategray",
   },
   textColorBlue: {
-    color: "lightseagreen"
+    color: colors.APP_COLOR
   },
   action_container: {
     alignItems: 'center',
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     width: 38,
     borderWidth: 0.4,
     borderColor: 'lightgray',
-    backgroundColor: 'lightseagreen'
+    backgroundColor: colors.APP_COLOR
   }
 });
 

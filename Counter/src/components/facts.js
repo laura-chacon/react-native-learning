@@ -6,11 +6,12 @@ import {
   Image,
   TextInput
 } from 'react-native';
+import * as colors from  './colors';
 
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
-    backgroundColor: "ghostwhite"
+    backgroundColor: colors.MAIN_BACKGROUND_COLOR
   },
   container: {
     flex: 1,
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Helvetica',
     fontSize: 16,
-    color: 'lightseagreen'
+    color: colors.APP_COLOR
   },
   textInput_container: {
     alignItems: 'center',
