@@ -15,13 +15,22 @@ class GreenyApp extends Component {
     super(props);
   }
 
+  componentWillMount() {
+    this.props.actions.openApp(
+      this.props.state.staticInfo.lastUpdatedDate,
+      this.props.state.authentication.uid,
+      this.props.state.authentication.token);
+  }
+
   componentDidMount() {
     let openAppAction = this.props.actions.openApp;
     let staticInfoLastUpdatedDate = this.props.state.staticInfo.lastUpdatedDate;
+    let infoUid = this.props.state.authentication.uid;
+    let infoToken = this.props.state.authentication.token;
     AppState.addEventListener(
       'change', (currentAppState) => {
         if (currentAppState == "active") {
-          openAppAction(staticInfoLastUpdatedDate);
+          openAppAction(staticInfoLastUpdatedDate, infoUid, infoToken);
         }
       });
   }
