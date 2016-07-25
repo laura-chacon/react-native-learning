@@ -11,17 +11,22 @@ import * as colors from  './colors';
 export const HISTORY_TAB = "HISTORY_TAB";
 export const FACTS_TAB = "FACTS_TAB";
 export const ACTION_TAB = "ACTION_TAB";
+export const CHART_TAB = "CHART_TAB";
 
 const HISTORY_TAB_SELECTED_ICON = require('../img/history_blue.png');
 const HISTORY_TAB_UNSELECTED_ICON = require('../img/history_gray.png');
 const FACTS_TAB_SELECTED_ICON = require('../img/facts_blue.png');
 const FACTS_TAB_UNSELECTED_ICON = require('../img/facts_gray.png');
+const ACTION_TAB_SELECTED_ICON = require('../img/new_action_appcolor.png');
+const ACTION_TAB_UNSELECTED_ICON = require('../img/new_action_gray.png');
+const CHART_TAB_SELECTED_ICON = require('../img/chart_appcolor.png');
+const CHART_TAB_UNSELECTED_ICON = require('../img/chart_gray.png');
 
 const styles = StyleSheet.create({
   tabBar: {
     height: 50,
     borderTopWidth: 0.5,
-    borderTopColor: "lightslategray",
+    borderTopColor: colors.BORDER_COLOR,
     flexDirection: "row",
     alignItems: "center"
   },
@@ -89,6 +94,12 @@ export default class TabBar extends Component {
     else if (tab == FACTS_TAB) {
       return "FACTS";
     }
+    else if (tab == ACTION_TAB) {
+      return "ACTION";
+    }
+    else if (tab == CHART_TAB) {
+      return "CHART";
+    }
   }
 
   _tabToImageSource(tab) {
@@ -106,6 +117,22 @@ export default class TabBar extends Component {
       }
       else {
         return FACTS_TAB_UNSELECTED_ICON;
+      }
+    }
+    else if (tab == ACTION_TAB) {
+      if (this.state.selectedTab == tab) {
+        return ACTION_TAB_SELECTED_ICON;
+      }
+      else {
+        return ACTION_TAB_UNSELECTED_ICON;
+      }
+    }
+    else if (tab == CHART_TAB) {
+      if (this.state.selectedTab == tab) {
+        return CHART_TAB_SELECTED_ICON;
+      }
+      else {
+        return CHART_TAB_UNSELECTED_ICON;
       }
     }
   }
@@ -128,28 +155,13 @@ export default class TabBar extends Component {
     );
   }
 
-  _renderActionIconContainer() {
-    return (
-      <TouchableHighlight
-        style={styles.action_container}
-        underlayColor={null}
-        onPress={() => {
-          this._onTabPressed(ACTION_TAB);
-        }}>
-        <View style={styles.action_icon_container}>
-          <Image style={styles.icon}
-            source={require('../img/add_white.png')}/>
-        </View>
-      </TouchableHighlight>
-    );
-  }
-
   render() {
     return (
       <View style={styles.tabBar}>
-        {this._renderIconContainer(HISTORY_TAB)}
-        {this._renderActionIconContainer()}
+        {this._renderIconContainer(ACTION_TAB)}
         {this._renderIconContainer(FACTS_TAB)}
+        {this._renderIconContainer(HISTORY_TAB)}
+        {this._renderIconContainer(CHART_TAB)}
       </View>);
   }
 }

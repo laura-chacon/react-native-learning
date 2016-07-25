@@ -6,13 +6,17 @@ import {
   AppState
 } from 'react-native';
 import TabBar from './tabBar';
+import NavigationBar from './navigationBar';
 import Facts from './facts'
 import History from './history'
+import Chart from './chart'
+import Action from './action'
 import * as colors from  './colors';
 
 const ACTION_TAB = "ACTION_TAB";
 const HISTORY_TAB = "HISTORY_TAB";
-const FACTS_TAB = "FACTS_TAB";
+const FACT_TAB = "FACTS_TAB";
+const CHART_TAB = "CHART_TAB"
 
 const styles = StyleSheet.create({
   parent: {
@@ -21,7 +25,16 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    marginTop: 10
+  },
+  icon_container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 19,
+    height: 38,
+    width: 38,
+    borderWidth: 0.4,
+    borderColor: 'lightgray',
+    backgroundColor: colors.APP_COLOR
   }
 });
 
@@ -38,7 +51,9 @@ export default class Root extends Component {
     if (tab == ACTION_TAB) {
       return (
         <View style={styles.contentContainer}>
-          <Text>actions</Text>
+          <Action
+            sections={staticState.sections}
+            actionTypes={staticState.actionTypes}/>
         </View>
       );
     }
@@ -50,17 +65,42 @@ export default class Root extends Component {
         </View>
       );
     }
-    else if (tab == FACTS_TAB) {
+    else if (tab == FACT_TAB) {
       return (
         <Facts
           fact={staticState.fact}/>
       );
+    }
+    else if (tab == CHART_TAB) {
+      return (
+        <View style={styles.contentContainer}>
+          <Chart
+            history={userState.history}/>
+        </View>
+      );
+    }
+  }
+
+  _tabToTitle(tab) {
+    if (tab == ACTION_TAB) {
+      return "New action";
+    }
+    else if (tab == HISTORY_TAB) {
+      return "History";
+    }
+    else if (tab == FACT_TAB) {
+      return "Fact of the day";
+    }
+    else if (tab == CHART_TAB) {
+      return "Score progression";
     }
   }
 
   render() {
     return (
       <View style={styles.parent}>
+        <NavigationBar
+          title={this._tabToTitle(this.state.selectedTab)}/>
         <View style={styles.contentContainer}>
           {this._renderTabContainer(this.state.selectedTab)}
         </View>
