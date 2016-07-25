@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Animated,
   Dimensions,
   Image,
   StyleSheet,
@@ -10,100 +11,102 @@ import Chart from 'react-native-chart';
 import SectionBar from './sectionBar';
 import * as colors from  './colors';
 
-const FOOD_SECTION = "FOOD_SECTION";
-const WATER_SECTION = "WATER_SECTION";
-const TRANSPORTATION_SECTION = "TRANSPORTATION_SECTION";
-const TEMPERATURE_SECTION = "TEMPERATURE_SECTION";
-
-const FOOD_INDEX = 0;
-const WATER_INDEX = 1;
-const TRANSPORTATION_INDEX = 2;
-const TEMPERATURE_INDEX = 3;
-
 const styles = StyleSheet.create({
   parent: {
     flex: 1,
     backgroundColor: colors.MAIN_BACKGROUND_COLOR
   },
-  section_bar: {
+  sectionBar: {
     flex: 1,
   },
-  wrapper: {
+  sectionsActionTypes: {
     flex: 4,
-    backgroundColor: 'yellow'
+    backgroundColor: 'yellow',
+    flexDirection: 'row'
   },
-  actions_container: {}
+  sectionActionTypes: {
+  }
 });
 
 export default class Action extends Component {
   constructor(props) {
     super(props);
+    let firstSelectedSection = props.sections.length > 0 ?
+      props.sections[0].id : null;
     this.state = {
-      selectedSection: FOOD_SECTION,
-      index: FOOD_INDEX
+      selectedSection: firstSelectedSection,
+      translateAnim: new Animated.Value(0),
+      xPreviousPosition: 0,
+      xPosition: 0
     };
   }
 
-  _getActionTypesPerSection(section) {
-    const { actionTypes } = this.props;
-    if(section == FOOD_SECTION) {
-      return actionTypes.Transportation;
-    }
-    else if (section == WATER_SECTION) {
-      return actionTypes.Water;
-    }
-    else if (section == WATER_SECTION) {
-      return actionTypes.Water;
-    }
-    else if (section == WATER_SECTION) {
-      return actionTypes.Water;
-    }
+  _startAnimation() {
+    Animated.timing(
+      this.state.translateAnim,
+      {
+        toValue: 1,
+        duration: 600
+      }
+    ).start();
+    setTimeout(() => this.setState({
+      translateAnim: new Animated.Value(0)
+    }), 600);
   }
 
-  _renderActions(actions) {
-    return null;
-  }
-
-  _renderActionTypesContainer(section) {
+  _calculateNextXPosition(newSelectedSection) {
     let {width} = Dimensions.get('window');
-    var actions = this._getActionTypesPerSection(section);
-    console.log(actions);
-    for(let i = 0; i < actions.length; i++) {
-      console.log(actions[i]);
-    }
-
-    return (
-      <View style={styles.actions_container}>
-        <Text>fooo</Text>
-      </View>
-    );
+    return -width * this._getSectionIndex(newSelectedSection);
   }
 
-  _renderActionTypesContainerWithSwipper(section) {
+  _getSectionIndex(section) {
+    let fun = function(s) {
+      return s.id == section;
+    }
+    return this.props.sections.findIndex(fun);
+  }
+
+  _renderActionTypesForSection(section) {
+    let {width} = Dimensions.get('window');
     return (
-      <View style={styles.wrapper}>
-        <View>
-          {this._renderActionTypesContainer(FOOD_SECTION)}
-          {this._renderActionTypesContainer(WATER_SECTION)}
-          {this._renderActionTypesContainer(TRANSPORTATION_SECTION)}
-          {this._renderActionTypesContainer(TEMPERATURE_SECTION)}
-        </View>
-      </View>
-    );
+      <Animated.View
+        key={section}
+        style={{
+          width: width,
+          transform: [{
+            translateX: this.state.translateAnim.interpolate({
+              inputRange: [0, 1],
+              outputRange: [this.state.xPreviousPosition, this.state.xPosition]
+            })
+          }]
+        }}>
+        <Text>{section}</Text>
+      </Animated.View>);
+  }
+
+  _renderActionTypesForAllSections() {
+    let thisInstance = this;
+    let fun = function(section) {
+      return thisInstance._renderActionTypesForSection(section.id);
+    }
+    return this.props.sections.map(fun);
   }
 
   render() {
-    const { sections } = this.props;
-    console.log(sections);
     return (
       <View style={styles.parent}>
         <SectionBar
-          sections={sections}
-          style={styles.section_bar}
-          onSectionPressed={(section) => {
-            this.setState({selectedSection: section})
+          sections={this.props.sections}
+          style={styles.sectionBar}
+          onSectionPressed={(selectedSection) => {
+            let xPreviousPosition = this.state.xPosition;
+            let xPosition = this._calculateNextXPosition(selectedSection);
+            this.setState({selectedSection, xPreviousPosition, xPosition});
+            this._startAnimation();
           }}/>
-        
+        <View style={styles.sectionsActionTypes}>
+          {this._renderActionTypesForAllSections()}
+        </View>
       </View>);
   }
 }
