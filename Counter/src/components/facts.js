@@ -26,15 +26,16 @@ const styles = StyleSheet.create({
   },
   textInput_container: {
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 30,
   },
   text: {
     height: 150,
     width: 250,
     fontFamily: 'Helvetica',
-    fontSize: 12,
+    fontSize: 15,
     color: 'gray',
-    textAlign: 'justify'
+    textAlign: 'justify',
+    lineHeight: 25
   }
 });
 
@@ -48,7 +49,6 @@ export default class Facts extends Component {
     return (
       <View style={styles.parent}>
         <View style={styles.container}>
-          <Text style={styles.icon_name}>Fact of the day:</Text>
           <View style={styles.textInput_container}>
             <Text style={styles.text}>
               {fact}{"\n"}

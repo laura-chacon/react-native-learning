@@ -132,7 +132,7 @@ export default class History extends Component {
       case "Transportation":
         return colors.TRANSPORTATION_SECTION_COLOR;
       case "Temperature":
-        return colors.TEMPERATURE_COLOR;
+        return colors.TEMPERATURE_SECTION_COLOR;
     }
   }
 
