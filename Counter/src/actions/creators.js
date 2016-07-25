@@ -347,28 +347,52 @@ function getFactBackendCall() {
 }
 
 function getActionTypesBackendcall() {
-  let action_types: [
-    {
-      "id": "meat",
-      "display": "I ate meat",
-      "points": -5
-     },
-     {
-      "id": "no_meat",
-      "display": "I didn't eat meat",
-      "points": 5
-    },
-    {
-      "id": "fish",
-      "display": "I ate fish",
-      "points": -3
-    },
-    {
-      "id": "no_fish",
-      "display": "I didn't eat fish",
-      "points": 3
-    }
-  ];
+  let action_types = {
+    transportation: [
+      {
+        "id": "bike",
+        "display": "Bike",
+        "points": 10
+       },
+       {
+        "id": "car",
+        "display": "Car",
+        "points": -5
+      },
+      {
+        "id": "public_transport",
+        "display": "Public transport",
+        "points": 5
+      },
+      {
+        "id": "plane",
+        "display": "Plane",
+        "points": -15
+      }
+    ],
+    water: [
+      {
+        "id": "short_shower",
+        "display": "Short shower",
+        "points": 5
+       },
+       {
+        "id": "long_shower",
+        "display": "Long Shower",
+        "points": -5
+      },
+      {
+        "id": "bath",
+        "display": "Bath",
+        "points": -10
+      },
+      {
+        "id": "cold_water",
+        "display": "Cold water",
+        "points": 5
+      }
+    ]
+  };
   return {
     actionTypes: action_types
   };
