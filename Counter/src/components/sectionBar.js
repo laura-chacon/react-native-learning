@@ -18,22 +18,25 @@ const TEMPERATURE_SECTION_SELECTED_ICON = require('../img/add_white.png');
 const TEMPERATURE_SECTION_UNSELECTED_ICON = require('../img/add.png');
 
 const styles = StyleSheet.create({
-  sectionBar: {
+  sectionsBar: {
     flex: 1,
-    borderTopWidth: 0.5,
-    borderTopColor: "lightgray",
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: 'space-between',
+    marginLeft: 20,
+    marginRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderTopWidth: 0.5,
+    borderColor: "#e6e6e6"
   },
-  icon_container: {
+  iconContainer: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: 'white',
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: colors.MAIN_BACKGROUND_COLOR,
   },
-  image_icon_container: {
+  iconContainerImage: {
     borderRadius: 30,
     padding: 10,
     borderWidth: 3,
@@ -84,10 +87,10 @@ export default class SectionBar extends Component {
     return (
       <View
         key={section}
-        style={styles.icon_container}>
+        style={styles.iconContainer}>
         <TouchableHighlight
           style={
-            [styles.image_icon_container,
+            [styles.iconContainerImage,
               {backgroundColor: this._getIconBackgroundColor(section)},
               {borderColor: this._getBorderColor(section)}]}
           underlayColor={null}
@@ -113,7 +116,7 @@ export default class SectionBar extends Component {
 
   render() {
     return (
-      <View style={styles.sectionBar}>
+      <View style={styles.sectionsBar}>
         {this._renderSections()}
       </View>
     );

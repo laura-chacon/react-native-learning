@@ -47,11 +47,12 @@ export default class Root extends Component {
   }
 
   _renderTabContainer(tab) {
-    const { staticState, userState, actions } = this.props;
+    const { staticState, userState } = this.props;
     if (tab == ACTION_TAB) {
       return (
         <View style={styles.contentContainer}>
           <Action
+            history={userState.history}
             sections={staticState.sections}
             actionTypes={staticState.actionTypes}/>
         </View>
