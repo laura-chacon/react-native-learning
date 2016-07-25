@@ -95,10 +95,10 @@ export default class TabBar extends Component {
       return "FACTS";
     }
     else if (tab == ACTION_TAB) {
-      return "ACTION";
+      return "NEW ACTION";
     }
     else if (tab == CHART_TAB) {
-      return "CHART";
+      return "PROGRESS";
     }
   }
 

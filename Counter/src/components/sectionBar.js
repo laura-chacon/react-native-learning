@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   sectionBar: {
     flex: 1,
     borderTopWidth: 0.5,
-    borderTopColor: colors.BORDER_COLOR,
+    borderTopColor: "lightgray",
     flexDirection: "row",
     alignItems: "center"
   },
