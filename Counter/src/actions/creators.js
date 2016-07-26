@@ -391,6 +391,50 @@ function getActionTypesBackendcall() {
         "display": "Cold water",
         "points": 5
       }
+    ],
+    food: [
+      {
+        "id": "meat",
+        "display": "Meat",
+        "points": -10
+       },
+       {
+        "id": "no_meat",
+        "display": "No meat",
+        "points": 10
+      },
+      {
+        "id": "fish",
+        "display": "Fish",
+        "points": -5
+      },
+      {
+        "id": "no_fish",
+        "display": "No fish",
+        "points": 5
+      }
+    ],
+    temperature: [
+      {
+        "id": "heating",
+        "display": "Heating",
+        "points": -10
+       },
+       {
+        "id": "cooling",
+        "display": "Cooling",
+        "points": -10
+      },
+      {
+        "id": "window",
+        "display": "Window",
+        "points": 5
+      },
+      {
+        "id": "sweater",
+        "display": "Sweater",
+        "points": 5
+      }
     ]
   };
   return {

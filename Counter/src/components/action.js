@@ -5,11 +5,45 @@ import {
   Image,
   StyleSheet,
   Text,
+  TouchableHighlight,
   View
 } from 'react-native';
 import Chart from 'react-native-chart';
 import SectionBar from './sectionBar';
 import * as colors from  './colors';
+
+const MEAT_ACTION_SELECTED_ICON = require('../img/food/meat_white@2x.png');
+const MEAT_ACTION_UNSELECTED_ICON = require('../img/food/meat_red@2x.png');
+const NO_MEAT_ACTION_SELECTED_ICON = require('../img/food/meat_white@2x.png');
+const NO_MEAT_ACTION_UNSELECTED_ICON = require('../img/food/meat_red@2x.png');
+const FISH_ACTION_SELECTED_ICON = require('../img/food/fish_white@2x.png');
+const FISH_ACTION_UNSELECTED_ICON = require('../img/food/fish_red@2x.png');
+const NO_FISH_ACTION_SELECTED_ICON = require('../img/food/fish_white@2x.png');
+const NO_FISH_ACTION_UNSELECTED_ICON = require('../img/food/fish_red@2x.png');
+const SHORT_SHOWER_ACTION_SELECTED_ICON = require('../img/water/shower_white@2x.png');
+const SHORT_SHOWER_ACTION_UNSELECTED_ICON = require('../img/water/shower_blue@2x.png');
+const LONG_SHOWER_ACTION_SELECTED_ICON = require('../img/water/shower_white@2x.png');
+const LONG_SHOWER_ACTION_UNSELECTED_ICON = require('../img/water/shower_blue@2x.png');
+const BATH_ACTION_SELECTED_ICON = require('../img/water/bath_white@2x.png');
+const BATH_ACTION_UNSELECTED_ICON = require('../img/water/bath_blue@2x.png');
+const COLD_WATER_ACTION_SELECTED_ICON = require('../img/water/cold_water_white@2x.png');
+const COLD_WATER_ACTION_UNSELECTED_ICON = require('../img/water/cold_water_blue@2x.png');
+const BIKE_ACTION_SELECTED_ICON = require('../img/transportation/bike_white@2x.png');
+const BIKE_ACTION_UNSELECTED_ICON = require('../img/transportation/bike_green@2x.png');
+const CAR_ACTION_SELECTED_ICON = require('../img/transportation/car_white@2x.png');
+const CAR_ACTION_UNSELECTED_ICON = require('../img/transportation/car_green@2x.png');
+const PLANE_ACTION_SELECTED_ICON = require('../img/transportation/plane_white@2x.png');
+const PLANE_ACTION_UNSELECTED_ICON = require('../img/transportation/plane_green@2x.png');
+const PUBLIC_TRANSPORT_ACTION_SELECTED_ICON = require('../img/transportation/transportation_white@2x.png');
+const PUBLIC_TRANSPORT_ACTION_UNSELECTED_ICON = require('../img/transportation/transportation_green@2x.png');
+const HEATING_ACTION_SELECTED_ICON = require('../img/temperature/heating_white@2x.png');
+const HEATING_ACTION_UNSELECTED_ICON = require('../img/temperature/heating_purple@2x.png');
+const COOLING_ACTION_SELECTED_ICON = require('../img/temperature/cooling_white@2x.png');
+const COOLING_ACTION_UNSELECTED_ICON = require('../img/temperature/cooling_purple@2x.png');
+const WINDOW_ACTION_SELECTED_ICON = require('../img/temperature/smart_home_white@2x.png');
+const WINDOW_ACTION_UNSELECTED_ICON = require('../img/temperature/smart_home_purple@2x.png');
+const SWEATER_ACTION_SELECTED_ICON = require('../img/temperature/sweater_white@2x.png');
+const SWEATER_ACTION_UNSELECTED_ICON = require('../img/temperature/sweater_purple@2x.png');
 
 const styles = StyleSheet.create({
   // Main containers
@@ -24,6 +58,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row'
+  },
+  horizontalLine: {
+    height: 1,
+    marginLeft: 20,
+    marginRight: 20,
+    borderTopWidth: 0.5,
+    borderColor: "#e6e6e6"
   },
   sectionsBar: {
     alignItems: "center",
@@ -79,9 +120,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   sectionInfoButtonInfoIconText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: 'white'
+    color: 'white',
+    fontStyle: 'italic'
   },
   sectionActionTypes: {
     flex: 1,
@@ -90,6 +132,27 @@ const styles = StyleSheet.create({
   },
 
   // Action types
+  actionTypesRowContainer: {
+    flexDirection: 'row',
+    flex: 1
+  },
+  actionTypeContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  iconActionTypeContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 30,
+    borderWidth: 3,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  icon: {
+    width: 40,
+    height: 40
+  }
 });
 
 export default class Action extends Component {
@@ -141,19 +204,50 @@ export default class Action extends Component {
     return this.props.history.reduce(fun, 0);
   }
 
+  _getSectionInfoButtonBackgroundColor(section) {
+    return eval("colors." + section.toUpperCase() + "_SECTION_COLOR");
+  }
+
+  _getBorderColor(section) {
+    return eval("colors." + section.toUpperCase() + "_SECTION_COLOR");
+  }
+
+  _getActionTypesRows(actionTypes) {
+    let actionTypesRows = [];
+    for (let i = 0; i < actionTypes.length; i += 2) {
+      let actionTypesRow = [actionTypes[i]];
+      if (i + 1 < actionTypes.length) {
+        actionTypesRow.push(actionTypes[i+1]);
+      }
+      actionTypesRows.push(actionTypesRow);
+    }
+    return actionTypesRows;
+  }
+
+  _actionToImageSource(action) {
+    // to change
+    let isSelected = this.state.selectedSection == action ?
+      "SELECTED" : "UNSELECTED";
+    let imageSourceConst =
+      action.toUpperCase() + "_ACTION_" + isSelected + "_ICON";
+    return eval(imageSourceConst);
+  }
 
   /* --------------------------------------------------------------------------
   RENDER
   ---------------------------------------------------------------------------*/
 
   _renderSectionInfoButton(section) {
+    let color = this._getSectionInfoButtonBackgroundColor(section.id);
     return (
       <View style={styles.sectionInfoButtonContainer}>
         <View
-          style={styles.sectionInfoButton}
+          style={
+            [styles.sectionInfoButton,
+              {backgroundColor: color}]}
           onPress={() => this._sectionInfoButtonPressed(section)}>
           <Text style={styles.sectionInfoButtonText}>
-            {section.display}
+            {section.display.toUpperCase()}
           </Text>
           <View style={styles.sectionInfoButtonInfoIconContainer}>
             <Text style={styles.sectionInfoButtonInfoIconText}>
@@ -165,10 +259,42 @@ export default class Action extends Component {
     );
   }
 
+  _renderActionType(action, borderColorSection) {
+    if(action != undefined) {
+      return (
+        <View style={styles.actionTypeContainer}>
+          <TouchableHighlight style={[styles.iconActionTypeContainer, {borderColor: borderColorSection}]}>
+            <Image
+              style={styles.icon}
+              source={this._actionToImageSource(action.id)}>
+            </Image>
+          </TouchableHighlight>
+          <Text>{action.display}</Text>
+        </View>
+      );
+    }
+    else {
+      return (
+        <View style={styles.actionTypeContainer}>
+        </View>
+      );
+    }
+  }
+
   _renderActionTypesForSection(section) {
-    return (
-      <Text>{section}</Text>
-    );
+    let thisInstance = this;
+    let borderColorSection = this._getBorderColor(section);
+    let actionTypes = this.props.actionTypes[section];
+    let actionTypesRows = this._getActionTypesRows(actionTypes)
+    let fun = function(row) {
+      return (
+        <View style={styles.actionTypesRowContainer}>
+          {thisInstance._renderActionType(row[0], borderColorSection)}
+          {thisInstance._renderActionType(row[1], borderColorSection)}
+        </View>
+      );
+    }
+    return actionTypesRows.map(fun);
   }
 
   _renderSection(section) {
@@ -215,6 +341,7 @@ export default class Action extends Component {
     return (
       <View style={styles.parent}>
         {this._renderScore()}
+        <View style={styles.horizontalLine}/>
         <SectionBar
           sections={this.props.sections}
           style={styles.sectionsBar}

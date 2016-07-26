@@ -8,27 +8,27 @@ import {
 } from 'react-native';
 import * as colors from  './colors';
 
-const FOOD_SECTION_SELECTED_ICON = require('../img/bike_white.png');
-const FOOD_SECTION_UNSELECTED_ICON = require('../img/bike_green.png');
-const WATER_SECTION_SELECTED_ICON = require('../img/water_white.png');
-const WATER_SECTION_UNSELECTED_ICON = require('../img/water_blue.png');
-const TRANSPORTATION_SECTION_SELECTED_ICON = require('../img/transportation_white.png');
-const TRANSPORTATION_SECTION_UNSELECTED_ICON = require('../img/transportation_green.png');
-const TEMPERATURE_SECTION_SELECTED_ICON = require('../img/add_white.png');
-const TEMPERATURE_SECTION_UNSELECTED_ICON = require('../img/add.png');
+const FOOD_SECTION_SELECTED_ICON = require('../img/food/food_white.png');
+const FOOD_SECTION_UNSELECTED_ICON = require('../img/food/food_red.png');
+const WATER_SECTION_SELECTED_ICON = require('../img/water/water_white.png');
+const WATER_SECTION_UNSELECTED_ICON = require('../img/water/water_blue.png');
+const TRANSPORTATION_SECTION_SELECTED_ICON =
+  require('../img/transportation/transportation_white.png');
+const TRANSPORTATION_SECTION_UNSELECTED_ICON =
+  require('../img/transportation/transportation_green.png');
+const TEMPERATURE_SECTION_SELECTED_ICON =
+  require('../img/temperature/smart_home_white.png');
+const TEMPERATURE_SECTION_UNSELECTED_ICON =
+  require('../img/temperature/smart_home_purple.png');
 
 const styles = StyleSheet.create({
   sectionsBar: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: 'space-between',
-    marginLeft: 20,
-    marginRight: 20,
+    justifyContent: 'space-around',
     paddingTop: 10,
     paddingBottom: 10,
-    borderTopWidth: 0.5,
-    borderColor: "#e6e6e6"
   },
   iconContainer: {
     flex: 1,
@@ -50,11 +50,21 @@ const styles = StyleSheet.create({
 export default class SectionBar extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      selectedSection: this._getDefaultSelectedSection(props)
+    };
+  }
+
+  componentWillUpdate() {
+    if (this.state.selectedSection == null) {
+      this.setState({selectedSection: this._getDefaultSelectedSection(this.props)});
+    }
+  }
+
+  _getDefaultSelectedSection(props) {
     let firstSelectedSection = props.sections.length > 0 ?
       props.sections[0].id : null;
-    this.state = {
-      selectedSection: firstSelectedSection
-    };
+    return firstSelectedSection;
   }
 
   _onSectionPressed(section) {
