@@ -262,7 +262,9 @@ export default class Action extends Component {
   _renderActionType(action, borderColorSection) {
     if(action != undefined) {
       return (
-        <View style={styles.actionTypeContainer}>
+        <View
+          style={styles.actionTypeContainer}
+          key={action.actionId}>
           <TouchableHighlight style={[styles.iconActionTypeContainer, {borderColor: borderColorSection}]}>
             <Image
               style={styles.icon}
@@ -286,9 +288,11 @@ export default class Action extends Component {
     let borderColorSection = this._getBorderColor(section);
     let actionTypes = this.props.actionTypes[section];
     let actionTypesRows = this._getActionTypesRows(actionTypes)
-    let fun = function(row) {
+    let fun = function(row, index) {
       return (
-        <View style={styles.actionTypesRowContainer}>
+        <View
+          key={section + "-" + index}
+          style={styles.actionTypesRowContainer}>
           {thisInstance._renderActionType(row[0], borderColorSection)}
           {thisInstance._renderActionType(row[1], borderColorSection)}
         </View>
