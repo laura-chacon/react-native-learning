@@ -17,9 +17,9 @@ const TRANSPORTATION_SECTION_SELECTED_ICON =
 const TRANSPORTATION_SECTION_UNSELECTED_ICON =
   require('../img/transportation/transportation_green.png');
 const TEMPERATURE_SECTION_SELECTED_ICON =
-  require('../img/temperature/smart_home_white.png');
+  require('../img/temperature/temperature_white.png');
 const TEMPERATURE_SECTION_UNSELECTED_ICON =
-  require('../img/temperature/smart_home_purple.png');
+  require('../img/temperature/temperature_purple.png');
 
 const styles = StyleSheet.create({
   sectionsBar: {

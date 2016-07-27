@@ -14,12 +14,12 @@ import * as colors from  './colors';
 
 const MEAT_ACTION_SELECTED_ICON = require('../img/food/meat_white@2x.png');
 const MEAT_ACTION_UNSELECTED_ICON = require('../img/food/meat_red@2x.png');
-const NO_MEAT_ACTION_SELECTED_ICON = require('../img/food/meat_white@2x.png');
-const NO_MEAT_ACTION_UNSELECTED_ICON = require('../img/food/meat_red@2x.png');
+const NO_MEAT_ACTION_SELECTED_ICON = require('../img/food/no_meat_white.png');
+const NO_MEAT_ACTION_UNSELECTED_ICON = require('../img/food/no_meat_red.png');
 const FISH_ACTION_SELECTED_ICON = require('../img/food/fish_white@2x.png');
 const FISH_ACTION_UNSELECTED_ICON = require('../img/food/fish_red@2x.png');
-const NO_FISH_ACTION_SELECTED_ICON = require('../img/food/fish_white@2x.png');
-const NO_FISH_ACTION_UNSELECTED_ICON = require('../img/food/fish_red@2x.png');
+const NO_FISH_ACTION_SELECTED_ICON = require('../img/food/no_fish_white.png');
+const NO_FISH_ACTION_UNSELECTED_ICON = require('../img/food/no_fish_red.png');
 const SHORT_SHOWER_ACTION_SELECTED_ICON = require('../img/water/shower_white@2x.png');
 const SHORT_SHOWER_ACTION_UNSELECTED_ICON = require('../img/water/shower_blue@2x.png');
 const LONG_SHOWER_ACTION_SELECTED_ICON = require('../img/water/shower_white@2x.png');
@@ -34,14 +34,14 @@ const CAR_ACTION_SELECTED_ICON = require('../img/transportation/car_white@2x.png
 const CAR_ACTION_UNSELECTED_ICON = require('../img/transportation/car_green@2x.png');
 const PLANE_ACTION_SELECTED_ICON = require('../img/transportation/plane_white@2x.png');
 const PLANE_ACTION_UNSELECTED_ICON = require('../img/transportation/plane_green@2x.png');
-const PUBLIC_TRANSPORT_ACTION_SELECTED_ICON = require('../img/transportation/transportation_white@2x.png');
-const PUBLIC_TRANSPORT_ACTION_UNSELECTED_ICON = require('../img/transportation/transportation_green@2x.png');
+const PUBLIC_TRANSPORT_ACTION_SELECTED_ICON = require('../img/transportation/public_transport_white@2x.png');
+const PUBLIC_TRANSPORT_ACTION_UNSELECTED_ICON = require('../img/transportation/public_transport_green@2x.png');
 const HEATING_ACTION_SELECTED_ICON = require('../img/temperature/heating_white@2x.png');
 const HEATING_ACTION_UNSELECTED_ICON = require('../img/temperature/heating_purple@2x.png');
 const COOLING_ACTION_SELECTED_ICON = require('../img/temperature/cooling_white@2x.png');
 const COOLING_ACTION_UNSELECTED_ICON = require('../img/temperature/cooling_purple@2x.png');
-const WINDOW_ACTION_SELECTED_ICON = require('../img/temperature/smart_home_white@2x.png');
-const WINDOW_ACTION_UNSELECTED_ICON = require('../img/temperature/smart_home_purple@2x.png');
+const WINDOW_ACTION_SELECTED_ICON = require('../img/temperature/window_white@2x.png');
+const WINDOW_ACTION_UNSELECTED_ICON = require('../img/temperature/window_purple@2x.png');
 const SWEATER_ACTION_SELECTED_ICON = require('../img/temperature/sweater_white@2x.png');
 const SWEATER_ACTION_UNSELECTED_ICON = require('../img/temperature/sweater_purple@2x.png');
 
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   iconActionTypeContainer: {
     width: 100,
     height: 100,
-    borderRadius: 30,
+    borderRadius: 20,
     borderWidth: 3,
     justifyContent: 'center',
     alignItems: 'center'
@@ -152,6 +152,10 @@ const styles = StyleSheet.create({
   icon: {
     width: 40,
     height: 40
+  },
+  textAction: {
+    fontSize: 10,
+    marginTop: 4
   }
 });
 
@@ -162,6 +166,7 @@ export default class Action extends Component {
       props.sections[0].id : null;
     this.state = {
       selectedSection: firstSelectedSection,
+      selectedAction: null,
       translateAnim: new Animated.Value(0),
       xPreviousPosition: 0,
       xPosition: 0
@@ -208,7 +213,7 @@ export default class Action extends Component {
     return eval("colors." + section.toUpperCase() + "_SECTION_COLOR");
   }
 
-  _getBorderColor(section) {
+  _getSectionColor(section) {
     return eval("colors." + section.toUpperCase() + "_SECTION_COLOR");
   }
 
@@ -225,12 +230,29 @@ export default class Action extends Component {
   }
 
   _actionToImageSource(action) {
-    // to change
-    let isSelected = this.state.selectedSection == action ?
+    let isSelected = this.state.selectedAction == action ?
       "SELECTED" : "UNSELECTED";
     let imageSourceConst =
       action.toUpperCase() + "_ACTION_" + isSelected + "_ICON";
     return eval(imageSourceConst);
+  }
+
+  _onActionTypePressed(action) {
+    if (this.state.selectedAction == action) {
+      this.setState({selectedAction: null});
+    }
+    else {
+      this.setState({selectedAction: action});
+    }
+  }
+
+  _getIconBackgroundColor(action, section) {
+    if (this.state.selectedAction == action) {
+      return eval("colors." + section.toUpperCase() + "_SECTION_COLOR");
+    }
+    else {
+      return colors.MAIN_BACKGROUND_COLOR;
+    }
   }
 
   /* --------------------------------------------------------------------------
@@ -259,19 +281,34 @@ export default class Action extends Component {
     );
   }
 
-  _renderActionType(action, borderColorSection) {
+  _renderActionType(action, section) {
     if(action != undefined) {
+      let sectionColor = this._getSectionColor(section);
       return (
         <View
           style={styles.actionTypeContainer}
           key={action.actionId}>
-          <TouchableHighlight style={[styles.iconActionTypeContainer, {borderColor: borderColorSection}]}>
+          <TouchableHighlight
+            style={
+              [styles.iconActionTypeContainer,
+                {backgroundColor: this._getIconBackgroundColor(action.id, section)},
+                {borderColor: sectionColor}]}
+            underlayColor={null}
+            onPress={() => {
+              this._onActionTypePressed(action.id);
+            }}>
             <Image
               style={styles.icon}
               source={this._actionToImageSource(action.id)}>
             </Image>
           </TouchableHighlight>
-          <Text>{action.display}</Text>
+          <Text
+            style={[
+              styles.textAction,
+              {color: sectionColor}
+            ]}>
+            {action.display.toUpperCase()}
+          </Text>
         </View>
       );
     }
@@ -285,7 +322,6 @@ export default class Action extends Component {
 
   _renderActionTypesForSection(section) {
     let thisInstance = this;
-    let borderColorSection = this._getBorderColor(section);
     let actionTypes = this.props.actionTypes[section];
     let actionTypesRows = this._getActionTypesRows(actionTypes)
     let fun = function(row, index) {
@@ -293,8 +329,8 @@ export default class Action extends Component {
         <View
           key={section + "-" + index}
           style={styles.actionTypesRowContainer}>
-          {thisInstance._renderActionType(row[0], borderColorSection)}
-          {thisInstance._renderActionType(row[1], borderColorSection)}
+          {thisInstance._renderActionType(row[0], section)}
+          {thisInstance._renderActionType(row[1], section)}
         </View>
       );
     }

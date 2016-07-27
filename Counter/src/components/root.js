@@ -3,7 +3,8 @@ import {
   StyleSheet,
   View,
   Text,
-  AppState
+  AppState,
+  TouchableHighlight
 } from 'react-native';
 import TabBar from './tabBar';
 import NavigationBar from './navigationBar';
@@ -35,6 +36,11 @@ const styles = StyleSheet.create({
     borderWidth: 0.4,
     borderColor: 'lightgray',
     backgroundColor: colors.APP_COLOR
+  },
+  textOk: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: colors.APP_COLOR
   }
 });
 
@@ -97,11 +103,28 @@ export default class Root extends Component {
     }
   }
 
+  _okButton(tab) {
+    const { actions } = this.props;
+    if(tab == ACTION_TAB) {
+      return (
+        <TouchableHighlight
+          style={styles.okButton}
+          underlayColor={null}
+          onPress={() => {
+            // to fill with actions.addAction()
+          }}>
+          <Text style={styles.textOk}>OK</Text>
+        </TouchableHighlight>
+      );
+    }
+  }
+
   render() {
     return (
       <View style={styles.parent}>
         <NavigationBar
-          title={this._tabToTitle(this.state.selectedTab)}/>
+          title={this._tabToTitle(this.state.selectedTab)}
+          rightContainer={this._okButton(this.state.selectedTab)}/>
         <View style={styles.contentContainer}>
           {this._renderTabContainer(this.state.selectedTab)}
         </View>

@@ -31,13 +31,21 @@ const styles = StyleSheet.create({
   rightContainer: {
     flex: 1,
     alignItems: 'flex-end',
-    marginRight: 10
+    marginRight: 15,
+  },
+  textOk: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: colors.APP_COLOR
   }
 });
 
 export default class navigationBar extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      okButtonAvailable: null
+    };
   }
 
   render() {

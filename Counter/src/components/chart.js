@@ -89,7 +89,7 @@ export default class Facts extends Component {
           <Chart
             style={styles.chart}
             data={progression}
-            type="bar"
+            type="line"
             />
         </View>
       </View>);
