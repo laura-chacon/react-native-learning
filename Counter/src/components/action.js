@@ -136,7 +136,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-
+  textSectionTitle: {
+    fontFamily: 'Helvetica',
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    fontSize: 17,
+    color: 'gray',
+    textAlign: 'justify',
+    lineHeight: 15,
+    marginBottom: 8
+  },
+  textSectionInfo: {
+    fontFamily: 'Helvetica',
+    fontSize: 15,
+    color: 'gray',
+    textAlign: 'justify',
+    lineHeight: 20
+  },
+  infoSectionContainer: {
+    margin: 20
+  },
   // Action types
   actionTypesRowContainer: {
     flexDirection: 'row',
@@ -441,22 +460,42 @@ export default class Action extends Component {
     );
   }
 
-  _renderModal() {
-    const { sections } = this.props;
-    console.log(this.state.selectedSection);
+  _renderTextInfoSection(actions, section) {
     return (
-      <Modal
-        animationType={"slide"}
-        transparent={false}
-        visible={this.state.modalVisible}>
-        <View
-          style={{backgroundColor: colors.MAIN_BACKGROUND_COLOR, flex: 1}}>
-          <NavigationBar
-            rightContainer={this._renderCloseButon()}/>
-          <Text></Text>
-        </View>
-      </Modal>
+      <View style={styles.infoSectionContainer}>
+        <Text style={styles.textSectionTitle}>{section.display}</Text>
+        <Text style={styles.textSectionInfo}>
+          {section.info}
+        </Text>
+      </View>
     );
+  }
+
+  _renderModal() {
+    const { sections, actionTypes } = this.props;
+    if (sections.length > 0) {
+      let section, actions;
+      if (this.state.selectedSection == null) {
+        section = sections.find((element) => element.id == "food")
+      }
+      else {
+        section = sections.find((element) => element.id == this.state.selectedSection);
+      }
+      let sectionId = section.id;
+      return (
+        <Modal
+          animationType={"slide"}
+          transparent={false}
+          visible={this.state.modalVisible}>
+          <View
+            style={{backgroundColor: colors.MAIN_BACKGROUND_COLOR, flex: 1}}>
+            <NavigationBar
+              rightContainer={this._renderCloseButon()}/>
+            {this._renderTextInfoSection(actionTypes[section.id], section)}
+          </View>
+        </Modal>
+      );
+    }
   }
 
   render() {
