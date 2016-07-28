@@ -3,6 +3,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  Modal,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import Chart from 'react-native-chart';
 import SectionBar from './sectionBar';
+import NavigationBar from './navigationBar';
 import * as colors from  './colors';
 
 const MEAT_ACTION_SELECTED_ICON = require('../img/food/meat_white@2x.png');
@@ -74,7 +76,11 @@ const styles = StyleSheet.create({
     flex: 6,
     flexDirection: 'row'
   },
-
+  textOk: {
+    fontSize: 16,
+    fontStyle: 'italic',
+    color: colors.APP_COLOR
+  },
   // Score
   scoreContainerLabelText: {
     marginRight: 5,
@@ -167,9 +173,11 @@ export default class Action extends Component {
     this.state = {
       selectedSection: firstSelectedSection,
       selectedAction: null,
+      pointsFromSelectedAction: null,
       translateAnim: new Animated.Value(0),
       xPreviousPosition: 0,
-      xPosition: 0
+      xPosition: 0,
+      modalVisible: false
     };
   }
 
@@ -199,7 +207,7 @@ export default class Action extends Component {
   }
 
   _sectionInfoButtonPressed(section) {
-    // TODO
+    this.setModalVisible(true);
   }
 
   _calculateTotalScore() {
@@ -238,11 +246,12 @@ export default class Action extends Component {
   }
 
   _onActionTypePressed(action) {
-    if (this.state.selectedAction == action) {
+    if (this.state.selectedAction == action.id) {
       this.setState({selectedAction: null});
     }
     else {
-      this.setState({selectedAction: action});
+      this.setState({selectedAction: action.id});
+      this.setState({pointsFromSelectedAction: action.points});
     }
   }
 
@@ -255,6 +264,22 @@ export default class Action extends Component {
     }
   }
 
+  _onOKPressed() {
+    const { nextActionId, uid, token, addAction } = this.props;
+    addAction(
+      uid,
+      nextActionId,
+      this.state.selectedSection,
+      this.state.selectedAction,
+      this.state.pointsFromSelectedAction,
+      token
+    );
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
   /* --------------------------------------------------------------------------
   RENDER
   ---------------------------------------------------------------------------*/
@@ -263,20 +288,24 @@ export default class Action extends Component {
     let color = this._getSectionInfoButtonBackgroundColor(section.id);
     return (
       <View style={styles.sectionInfoButtonContainer}>
-        <View
-          style={
-            [styles.sectionInfoButton,
-              {backgroundColor: color}]}
-          onPress={() => this._sectionInfoButtonPressed(section)}>
-          <Text style={styles.sectionInfoButtonText}>
-            {section.display.toUpperCase()}
-          </Text>
-          <View style={styles.sectionInfoButtonInfoIconContainer}>
-            <Text style={styles.sectionInfoButtonInfoIconText}>
-              i
+        <TouchableHighlight
+          onPress={() => {
+            this._sectionInfoButtonPressed(section)
+          }}>
+          <View
+            style={
+              [styles.sectionInfoButton,
+              {backgroundColor: color}]}>
+            <Text style={styles.sectionInfoButtonText}>
+              {section.display.toUpperCase()}
             </Text>
+            <View style={styles.sectionInfoButtonInfoIconContainer}>
+              <Text style={styles.sectionInfoButtonInfoIconText}>
+                i
+              </Text>
+            </View>
           </View>
-        </View>
+        </TouchableHighlight>
       </View>
     );
   }
@@ -295,7 +324,7 @@ export default class Action extends Component {
                 {borderColor: sectionColor}]}
             underlayColor={null}
             onPress={() => {
-              this._onActionTypePressed(action.id);
+              this._onActionTypePressed(action);
             }}>
             <Image
               style={styles.icon}
@@ -377,9 +406,67 @@ export default class Action extends Component {
     );
   }
 
+  _renderOKButton(tab) {
+    if(this.state.selectedAction == null) {
+      return (
+        <Text style={
+            [styles.textOk,
+            {color: 'gray'}]}>OK</Text>
+      );
+    }
+    else {
+      return (
+        <TouchableHighlight
+          style={styles.okButton}
+          underlayColor={null}
+          onPress={() => {
+            this._onOKPressed();
+          }}>
+          <Text style={styles.textOk}>OK</Text>
+        </TouchableHighlight>
+      );
+    }
+  }
+
+  _renderCloseButon() {
+    return (
+      <TouchableHighlight
+        style={styles.okButton}
+        underlayColor={null}
+        onPress={() => {
+          this.setModalVisible(!this.state.modalVisible)
+        }}>
+        <Text style={styles.textOk}>Close</Text>
+      </TouchableHighlight>
+    );
+  }
+
+  _renderModal() {
+    const { sections } = this.props;
+    console.log(this.state.selectedSection);
+    return (
+      <Modal
+        animationType={"slide"}
+        transparent={false}
+        visible={this.state.modalVisible}>
+        <View
+          style={{backgroundColor: colors.MAIN_BACKGROUND_COLOR, flex: 1}}>
+          <NavigationBar
+            rightContainer={this._renderCloseButon()}/>
+          <Text></Text>
+        </View>
+      </Modal>
+    );
+  }
+
   render() {
+    const { title, selectedTab } = this.props;
     return (
       <View style={styles.parent}>
+        {this._renderModal()}
+        <NavigationBar
+          title={title}
+          rightContainer={this._renderOKButton(selectedTab)}/>
         {this._renderScore()}
         <View style={styles.horizontalLine}/>
         <SectionBar
@@ -391,9 +478,10 @@ export default class Action extends Component {
             this.setState({selectedSection, xPreviousPosition, xPosition});
             this._startAnimation();
           }}/>
-        <View style={styles.sectionsContainer}>
-          {this._renderSections()}
+          <View style={styles.sectionsContainer}>
+            {this._renderSections()}
+          </View>
         </View>
-      </View>);
+      );
   }
 }

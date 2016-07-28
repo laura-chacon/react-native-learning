@@ -6,6 +6,8 @@ import {
   Image
 } from 'react-native';
 import Chart from 'react-native-chart';
+import NavigationBar from './navigationBar';
+import LinearGradient from 'react-native-linear-gradient';
 import * as colors from  './colors';
 
 const styles = StyleSheet.create({
@@ -21,7 +23,20 @@ const styles = StyleSheet.create({
   chart: {
     width: 300,
     height: 300
-  }
+  },
+  linearGradient: {
+     paddingLeft: 15,
+     paddingRight: 15,
+     borderRadius: 5
+   },
+   buttonText: {
+     fontSize: 18,
+     fontFamily: 'Gill Sans',
+     textAlign: 'center',
+     margin: 10,
+     color: '#ffffff',
+     backgroundColor: 'transparent',
+   },
 });
 
 export default class Facts extends Component {
@@ -81,11 +96,18 @@ export default class Facts extends Component {
 
   render() {
     let progression = this._getScoreProgression();
-    console.log(progression);
+    const { title } = this.props;
     progression = [[0,1], [1,3], [3,7], [4,9], [5, -10]];
     return (
       <View style={styles.parent}>
+        <NavigationBar
+          title={title}/>
         <View style={styles.container}>
+          <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.linearGradient}>
+            <Text style={styles.buttonText}>
+              Sign in with Facebook
+            </Text>
+          </LinearGradient>
           <Chart
             style={styles.chart}
             data={progression}

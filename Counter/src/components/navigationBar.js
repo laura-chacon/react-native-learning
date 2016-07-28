@@ -15,7 +15,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.MAIN_BACKGROUND_COLOR,
     flexDirection: "row",
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderBottomWidth: 0.5,
+    borderColor: '#e6e6e6',
   },
   leftContainer: {
     flex: 1,
@@ -32,20 +34,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
     marginRight: 15,
-  },
-  textOk: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: colors.APP_COLOR
   }
 });
 
 export default class navigationBar extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      okButtonAvailable: null
-    };
   }
 
   render() {

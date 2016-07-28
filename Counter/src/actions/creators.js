@@ -128,9 +128,9 @@ export function openApp(staticInfoLastDate, uid, authToken) {
 }
 
 export function addAction(uid, nextActionId, section, actionType, score, authToken) {
-  createActionBackendCall(uid, nextActionId, section, actionType, score, authToken);
+  createActionBackendCall(uid, nextActionId, shection, actionType, score, authToken);
   let nextACtionId = getNextActionIdBackendCall(uid);
-  let history = getHistoryBackendCall(uid, authToken);
+  let history = getHistoryBackendCall(uid, authToken)
   return {
     type: types.ADD_ACTION,
     nextActionId: nextActionId,
@@ -300,19 +300,23 @@ function getSectionsBackendCall() {
   let sections = [
   		{
     		"id": "food",
-    		"display": "Food"
+    		"display": "Food",
+        "info": "When land is used to raise animals instead of crops, precious water and soil are lost, trees are cut down to make land for grazing or factory-farm sheds, and untreated animal waste pollutes rivers and streams. In fact, it has such a devastating effect on all aspects of our environment that the Union of Concerned Scientists lists meat-eating as the second-biggest environmental hazard facing the Earth. (Number one is fossil-fuel vehicles.) And according to a report published by the Worldwatch Institute, a staggering 51 percent or more of global greenhouse-gas emissions are caused by animal agriculture."
   		},
   		{
     		"id": "water",
-    		"display": "Water"
+    		"display": "Water",
+        "info": ""
   		},
   		{
     		"id": "transportation",
-    		"display": "Transportation"
+    		"display": "Transportation",
+        "info": ""
   		},
   		{
     		"id": "temperature",
-    		"display": "Temperature"
+    		"display": "Temperature",
+        "info": ""
   		}
   	];
   return {

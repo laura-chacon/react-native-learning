@@ -6,7 +6,7 @@ import {
   Image,
   ListView
 } from 'react-native';
-
+import NavigationBar from './navigationBar';
 import * as colors from  './colors';
 
 const styles = StyleSheet.create({
@@ -311,8 +311,11 @@ export default class History extends Component {
   }
 
   render() {
+    const { title } = this.props;
     return (
       <View style={styles.listview_container}>
+        <NavigationBar
+          title={title}/>
         {this._renderListView()}
       </View>
     );

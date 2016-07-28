@@ -6,6 +6,7 @@ import {
   Image,
   TextInput
 } from 'react-native';
+import NavigationBar from './navigationBar';
 import * as colors from  './colors';
 
 const styles = StyleSheet.create({
@@ -45,9 +46,11 @@ export default class Facts extends Component {
   }
 
   render() {
-    const { fact } = this.props;
+    const { fact, title } = this.props;
     return (
       <View style={styles.parent}>
+        <NavigationBar
+          title={title}/>
         <View style={styles.container}>
           <View style={styles.textInput_container}>
             <Text style={styles.text}>

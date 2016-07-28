@@ -46,6 +46,7 @@ class GreenyApp extends Component {
       return <Root
         staticState={state.staticInfo}
         userState={state.user}
+        authenticationState={state.authentication}
         actions={actions}/>;
     }
   }

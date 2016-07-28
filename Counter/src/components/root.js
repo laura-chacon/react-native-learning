@@ -7,7 +7,6 @@ import {
   TouchableHighlight
 } from 'react-native';
 import TabBar from './tabBar';
-import NavigationBar from './navigationBar';
 import Facts from './facts'
 import History from './history'
 import Chart from './chart'
@@ -37,11 +36,6 @@ const styles = StyleSheet.create({
     borderColor: 'lightgray',
     backgroundColor: colors.APP_COLOR
   },
-  textOk: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: colors.APP_COLOR
-  }
 });
 
 export default class Root extends Component {
@@ -50,42 +44,6 @@ export default class Root extends Component {
     this.state = {
       selectedTab: ACTION_TAB
     };
-  }
-
-  _renderTabContainer(tab) {
-    const { staticState, userState } = this.props;
-    if (tab == ACTION_TAB) {
-      return (
-        <View style={styles.contentContainer}>
-          <Action
-            history={userState.history}
-            sections={staticState.sections}
-            actionTypes={staticState.actionTypes}/>
-        </View>
-      );
-    }
-    else if (tab == HISTORY_TAB) {
-      return (
-        <View style={styles.contentContainer}>
-          <History
-            history={userState.history}/>
-        </View>
-      );
-    }
-    else if (tab == FACT_TAB) {
-      return (
-        <Facts
-          fact={staticState.fact}/>
-      );
-    }
-    else if (tab == CHART_TAB) {
-      return (
-        <View style={styles.contentContainer}>
-          <Chart
-            history={userState.history}/>
-        </View>
-      );
-    }
   }
 
   _tabToTitle(tab) {
@@ -103,18 +61,49 @@ export default class Root extends Component {
     }
   }
 
-  _okButton(tab) {
-    const { actions } = this.props;
-    if(tab == ACTION_TAB) {
+  _renderTabContainer(tab) {
+    const { authenticationState, staticState, userState, actions } = this.props;
+    let title = this._tabToTitle(tab);
+    if (tab == ACTION_TAB) {
       return (
-        <TouchableHighlight
-          style={styles.okButton}
-          underlayColor={null}
-          onPress={() => {
-            // to fill with actions.addAction()
-          }}>
-          <Text style={styles.textOk}>OK</Text>
-        </TouchableHighlight>
+        <View style={styles.contentContainer}>
+          <Action
+            title={title}
+            addAction = {actions.addAction}
+            history={userState.history}
+            sections={staticState.sections}
+            actionTypes={staticState.actionTypes}
+            selectedTab={this.state.selectedTab}
+            uid={authenticationState.uid}
+            nextActionId={userState.nextActionId}
+            token={authenticationState.token}
+            />
+        </View>
+      );
+    }
+    else if (tab == HISTORY_TAB) {
+      return (
+        <View style={styles.contentContainer}>
+          <History
+            title={title}
+            history={userState.history}/>
+        </View>
+      );
+    }
+    else if (tab == FACT_TAB) {
+      return (
+        <Facts
+          title={title}
+          fact={staticState.fact}/>
+      );
+    }
+    else if (tab == CHART_TAB) {
+      return (
+        <View style={styles.contentContainer}>
+          <Chart
+            title={title}
+            history={userState.history}/>
+        </View>
       );
     }
   }
@@ -122,9 +111,6 @@ export default class Root extends Component {
   render() {
     return (
       <View style={styles.parent}>
-        <NavigationBar
-          title={this._tabToTitle(this.state.selectedTab)}
-          rightContainer={this._okButton(this.state.selectedTab)}/>
         <View style={styles.contentContainer}>
           {this._renderTabContainer(this.state.selectedTab)}
         </View>
