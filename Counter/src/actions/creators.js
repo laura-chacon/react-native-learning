@@ -128,7 +128,7 @@ export function openApp(staticInfoLastDate, uid, authToken) {
 }
 
 export function addAction(uid, nextActionId, section, actionType, score, authToken) {
-  createActionBackendCall(uid, nextActionId, shection, actionType, score, authToken);
+  createActionBackendCall(uid, nextActionId, section, actionType, score, authToken);
   let nextACtionId = getNextActionIdBackendCall(uid);
   let history = getHistoryBackendCall(uid, authToken)
   return {

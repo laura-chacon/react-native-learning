@@ -4,11 +4,17 @@ import {
   Dimensions,
   Image,
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
-  View
+  View,
 } from 'react-native';
+import {
+  CustomCell,
+  Section,
+  TableView
+} from 'react-native-tableview-simple'
 import Chart from 'react-native-chart';
 import SectionBar from './sectionBar';
 import NavigationBar from './navigationBar';
@@ -151,7 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: 'gray',
     textAlign: 'justify',
-    lineHeight: 20
+    lineHeight: 22
   },
   infoSectionContainer: {
     margin: 20
@@ -181,7 +187,9 @@ const styles = StyleSheet.create({
   textAction: {
     fontSize: 10,
     marginTop: 4
-  }
+  },
+  // table
+
 });
 
 export default class Action extends Component {
@@ -308,6 +316,7 @@ export default class Action extends Component {
     return (
       <View style={styles.sectionInfoButtonContainer}>
         <TouchableHighlight
+          underlayColor={null}
           onPress={() => {
             this._sectionInfoButtonPressed(section)
           }}>
@@ -460,13 +469,57 @@ export default class Action extends Component {
     );
   }
 
+  _renderActionInTable(actions) {
+    let fun = function(action) {
+      return (
+        <CustomCell
+          contentContainerStyle={{ height: 30}}
+          cellStyle="LeftDetail">
+          <Text style={{
+              flex: 1,
+              fontSize: 10,
+              color: colors.APP_COLOR,
+              fontFamily: 'Helvetica',
+              fontStyle: 'italic',
+             }}>
+            {action.display.toUpperCase()}
+          </Text>
+          <Text style={{
+              flex: 1,
+              fontSize: 10,
+              color: colors.APP_COLOR,
+              fontFamily: 'Helvetica',
+              fontStyle: 'italic',
+              textAlign: 'left'
+             }}>
+            {action.points}
+          </Text>
+        </CustomCell>
+      );
+    }
+    return actions.map(fun);
+  }
+
+  _renderInfoTable(actions) {
+    return (
+      <TableView>
+        <Section>
+          {this._renderActionInTable(actions)}
+        </Section>
+      </TableView>
+    );
+  }
+
   _renderTextInfoSection(actions, section) {
     return (
       <View style={styles.infoSectionContainer}>
-        <Text style={styles.textSectionTitle}>{section.display}</Text>
-        <Text style={styles.textSectionInfo}>
-          {section.info}
+        <Text style={styles.textSectionTitle}>
+          {"\n"}{section.display}
         </Text>
+        <Text style={styles.textSectionInfo}>
+          {section.info}{"\n"}
+        </Text>
+        {this._renderInfoTable(actions)}
       </View>
     );
   }
@@ -485,14 +538,15 @@ export default class Action extends Component {
       return (
         <Modal
           animationType={"slide"}
-          transparent={false}
+          transparent={true}
           visible={this.state.modalVisible}>
-          <View
+          <NavigationBar
+            rightContainer={this._renderCloseButon()}/>
+          <ScrollView
             style={{backgroundColor: colors.MAIN_BACKGROUND_COLOR, flex: 1}}>
-            <NavigationBar
-              rightContainer={this._renderCloseButon()}/>
             {this._renderTextInfoSection(actionTypes[section.id], section)}
-          </View>
+          </ScrollView>
+
         </Modal>
       );
     }
