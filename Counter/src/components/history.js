@@ -73,8 +73,8 @@ export default class History extends Component {
         let data = acc[action.datetime];
         data.actions.push({
           section: action.section,
-          actionType: action.actionType,
-          actionId: action.actionId
+          actionType: action.action_type,
+          actionId: action.action_id
         });
         data.score = data.score + action.score;
         acc[action.datetime] = data;
@@ -84,8 +84,8 @@ export default class History extends Component {
           date: action.datetime,
           actions: [{
             section: action.section,
-            actionType: action.actionType,
-            actionId: action.actionId
+            actionType: action.action_type,
+            actionId: action.action_id
           }],
           score: action.score
         }
@@ -125,13 +125,13 @@ export default class History extends Component {
 
   _getColorSection(section) {
     switch(section) {
-      case "Food":
+      case "food":
         return colors.FOOD_SECTION_COLOR;
-      case "Water":
+      case "water":
         return colors.WATER_SECTION_COLOR;
-      case "Transportation":
+      case "transportation":
         return colors.TRANSPORTATION_SECTION_COLOR;
-      case "Temperature":
+      case "temperature":
         return colors.TEMPERATURE_SECTION_COLOR;
     }
   }

@@ -90,7 +90,6 @@ export function addAction(uid, nextActionId, section, actionType, score,
 // -----------------------------------------------------------------------------
 function nextStep(ctxt, partialAction, dispatch, stepsLeft) {
  if (stepsLeft.length == 0) {
-   console.log(partialAction);
    dispatch(partialAction);
  }
  else {
@@ -248,7 +247,6 @@ function getHistoryBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
     f(response);
   }
   else {
-    console.log("Token: " + ctxt.token);
     let path = `/users/${ctxt.uid}/history`;
     let headers = new Headers({Token: ctxt.token});
     doFetch(path, {headers}, f);
@@ -287,17 +285,11 @@ function addActionBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
 // -----------------------------------------------------------------------------
 
 function doFetch(path, options, resultFun) {
- console.log("-------- Sending request");
- console.log("Request URL path: " + path);
- console.log(options);
  fetch(uri(path), options)
    .then(response => {
-     console.log("-------- Got response");
-     console.log("Status code: " + response.status);
      return response.json();
    })
    .then(json => {
-     console.log(json);
      return resultFun(json);
    });
 }

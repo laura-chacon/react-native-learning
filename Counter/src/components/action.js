@@ -471,10 +471,11 @@ export default class Action extends Component {
 
   _renderActionInTable(actions) {
     let fun = function(action) {
+      console.log(action);
       return (
         <CustomCell
           contentContainerStyle={{ height: 30}}
-          key={action}
+          key={action.id}
           cellStyle="LeftDetail">
           <Text style={{
               flex: 1,
