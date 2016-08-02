@@ -8,9 +8,7 @@ const initialState = {
 };
 
 export default function staticInfo(state = initialState, action = {}) {
-  if (action.type == actionTypes.OPEN_APP ||
-      action.type == actionTypes.LOGIN ||
-      action.type == actionTypes.SIGNUP) {
+  if (action.type == actionTypes.OPEN_APP) {
     return {
       ...state,
       fact: action.fact,

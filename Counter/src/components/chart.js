@@ -97,10 +97,6 @@ export default class Facts extends Component {
   render() {
     let progression = this._getScoreProgression();
     const { title } = this.props;
-    /*
-    progression = [[0,1], [1,3], [3,7], [4,9], [5, -10]];
-    */
-    progression = [["Positive", 30], ["Negative", 45]];
     return (
       <View style={styles.parent}>
         <NavigationBar
@@ -109,7 +105,7 @@ export default class Facts extends Component {
           <Chart
             style={styles.chart}
             data={progression}
-            type="pie"
+            type="bar"
             />
         </View>
       </View>);

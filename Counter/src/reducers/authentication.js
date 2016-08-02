@@ -7,7 +7,6 @@ const initialState = {
   isEmailRegistered: false,
   uid: null,
   email: null,
-  token: null,
   error: null
 };
 

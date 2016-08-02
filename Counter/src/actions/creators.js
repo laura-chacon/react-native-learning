@@ -1,98 +1,349 @@
 import * as types from './types';
 
-const MOCK_BACKEND = true;
+const MOCK_BACKEND = false;
+
+
+// -----------------------------------------------------------------------------
+// ACTIONS
+// -----------------------------------------------------------------------------
 
 export function submitEmail(email) {
-  let response = getUserByEmailBackendCall(email);
-  if (response.users.length == 0) {
-    return {
-      type: types.SUBMIT_EMAIL,
-      uid: response.uid,
-      isEmailRegistered: false,
-      email: email
-    };
-  }
-  else {
-    return {
-      type: types.SUBMIT_EMAIL,
-      uid: response.users[0].uid,
-      isEmailRegistered: true,
-      email: email
-    };
-  }
-}
-
-export function login(uid, password) {
-  let response = loginBackendCall(uid, password);
-  if (response.token) {
-    let nextActionId = getNextActionIdBackendCall(uid);
-    let staticInfo = getStaticInfo();
-    let history = getHistoryBackendCall(uid, response.token);
-    return {
-      type: types.LOGIN,
-      token: response.token,
-      loginSuccessful : true,
-      nextActionId: nextActionId,
-      history: history.history,
-      fact: staticInfo.fact,
-      sections: staticInfo.sections,
-      actionTypes: staticInfo.actionTypes
-    };
-  }
-  else {
-    return {
-      type: types.LOGIN,
-      loginSuccessful: false
-    };
-  }
+  return (dispatch) => {
+    let type = types.SUBMIT_EMAIL;
+    let ctxt = {email};
+    let steps = [
+      getUserByEmailBackendCall
+    ];
+    steps.reverse();
+    nextStep(ctxt, {type}, dispatch, steps);
+  };
 }
 
 export function signup(uid, email, password) {
-  let response = signupBackendCall(uid, email, password);
-  if (response.token) {
-    let nextActionId = getNextActionIdBackendCall(uid);
-    let staticInfo = getStaticInfo();
-    let history = getHistoryBackendCall(uid, response.token);
+ return (dispatch) => {
+   let type = types.SIGNUP;
+   let ctxt = {uid, email, password};
+   let steps = [
+     signupBackendCall,
+     getNextActionIdBackendCall,
+     getHistoryBackendCall
+   ];
+   steps.reverse();
+   nextStep(ctxt, {type}, dispatch, steps);
+ };
+}
+
+export function login(uid, password) {
+ return (dispatch) => {
+   let type = types.LOGIN;
+   let ctxt = {uid, password};
+   let steps = [
+     loginBackendCall,
+     getNextActionIdBackendCall,
+     getHistoryBackendCall
+   ];
+   steps.reverse();
+   nextStep(ctxt, {type}, dispatch, steps);
+ };
+}
+
+export function openApp(staticInfoLastDate, uid, token) {
+  if (staticInfoLastDate != null && isDateFromToday(staticInfoLastDate)) {
     return {
-      type: types.SIGNUP,
-      token: response.token,
-      nextActionId: nextActionId,
-      history: history.history,
-      fact: staticInfo.fact,
-      sections: staticInfo.sections,
-      actionTypes: staticInfo.actionTypes
+      type: types.NO_ACTION
+    };
+  }
+  else {
+    return (dispatch) => {
+      let type = types.OPEN_APP;
+      let ctxt = {uid, token};
+      let steps = [
+        getFactBackendCall,
+        getSectionsBackendCall,
+        getActionTypesForAllSections
+      ];
+      steps.reverse();
+      nextStep(ctxt, {type}, dispatch, steps);
     };
   }
 }
 
-function getUserByEmailBackendCall(email) {
-  return getUserFoundMock();
+export function addAction(uid, nextActionId, section, actionType, score,
+                          token) {
+  return (dispatch) => {
+    let type = types.ADD_ACTION;
+    let ctxt = {uid, token, nextActionId, section, actionType, score};
+    let steps = [
+      addActionBackendCall,
+      getNextActionIdBackendCall,
+      getHistoryBackendCall
+    ];
+    steps.reverse();
+    nextStep(ctxt, {type}, dispatch, steps);
+  };
 }
 
-function getUserNotFoundMock() {
+
+
+// -----------------------------------------------------------------------------
+// STEPS
+// -----------------------------------------------------------------------------
+function nextStep(ctxt, partialAction, dispatch, stepsLeft) {
+ if (stepsLeft.length == 0) {
+   console.log(partialAction);
+   dispatch(partialAction);
+ }
+ else {
+   let step = stepsLeft.pop();
+   step(ctxt, partialAction, dispatch, stepsLeft);
+ }
+}
+function getUserByEmailBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
+  let f = function(response) {
+    let email = ctxt.email;
+    let isEmailRegistered = response.users.length == 1;
+    let uid = response.users.length == 0 ? response.uid : response.users[0].uid;
+    let action = Object.assign({email, isEmailRegistered, uid}, partialAction);
+    dispatch(action);
+  };
+  if (MOCK_BACKEND) {
+    let response = getUserByEmailBackendCallMock();
+    f(response);
+  }
+  else {
+    let path = `/users?email=${ctxt.email}`;
+    doFetch(path, {}, f);
+  }
+}
+function loginBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
+ let f = function(response) {
+   if (response.token) {
+     partialAction['token'] = response.token;
+     partialAction['loginSuccessful'] = true;
+     ctxt['token'] = response.token;
+     nextStep(ctxt, partialAction, dispatch, stepsLeft);
+   }
+   else {
+     partialAction['loginSuccessful'] = false;
+     dispatch(partialAction);
+   }
+ };
+ if (MOCK_BACKEND) {
+   let response = loginBackendCallMock();
+   f(response);
+ }
+ else {
+   let path = `/users/${ctxt.uid}/validate_password`;
+   let password = ctxt.password;
+   let body = JSON.stringify({password});
+   let method = 'post';
+   let headers = new Headers({'Content-Type': 'application/json'});
+   doFetch(path, {method, body, headers}, f);
+ }
+}
+
+function signupBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
+  let f = function(response) {
+    partialAction['token'] = response.auth_token;
+    ctxt['token'] = response.auth_token;
+    nextStep(ctxt, partialAction, dispatch, stepsLeft);
+  };
+  if (MOCK_BACKEND) {
+    let response = signupBackendCallMock();
+    f(response);
+  }
+  else {
+    let path = `/users/${ctxt.uid}`;
+    let password = ctxt.password;
+    let email = ctxt.email;
+    let body = JSON.stringify({email, password});
+    let method = 'put';
+    let headers = new Headers({'Content-Type': 'application/json'});
+    doFetch(path, {method, body, headers}, f);
+  }
+}
+
+function getFactBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
+  let f = function(response) {
+    partialAction['fact'] = response.display;
+    nextStep(ctxt, partialAction, dispatch, stepsLeft);
+  };
+  if (MOCK_BACKEND) {
+    let response = getFactBackendCallMock();
+    f(response);
+  }
+  else {
+    let path = `/facts`;
+    doFetch(path, {}, f);
+  }
+}
+
+function getSectionsBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
+  let f = function(response) {
+    partialAction['sections'] = response.sections;
+    nextStep(ctxt, partialAction, dispatch, stepsLeft);
+  };
+  if (MOCK_BACKEND) {
+    let response = getSectionsBackendCallMock();
+    f(response);
+  }
+  else {
+    let path = "/sections";
+    doFetch(path, {}, f);
+  }
+}
+
+function getActionTypesForAllSections(ctxt, partialAction, dispatch,
+                                      stepsLeft) {
+  let sectionIds = partialAction.sections.map((section) => section.id);
+  let extraSteps = sectionIds.map((sectionId) =>
+    (...args) => getSectionActionTypesBackendCall(sectionId, ...args)
+  );
+  stepsLeft = stepsLeft.concat(extraSteps);
+  partialAction['actionTypes'] = {};
+  nextStep(ctxt, partialAction, dispatch, stepsLeft);
+}
+
+function getSectionActionTypesBackendCall(sectionId, ctxt, partialAction,
+                                          dispatch, stepsLeft) {
+  let f = function(response) {
+    let actionTypes = Object.assign({[sectionId]: response.action_types},
+                                   partialAction['actionTypes']);
+    partialAction['actionTypes'] = actionTypes;
+    nextStep(ctxt, partialAction, dispatch, stepsLeft);
+  };
+  if (MOCK_BACKEND) {
+    let response = getSectionActionTypesBackendCallMock(sectionId);
+    f(response);
+  }
+  else {
+    let path = `/sections/${sectionId}/actions`;
+    doFetch(path, {}, f);
+  }
+}
+
+function getNextActionIdBackendCall(ctxt, partialAction, dispatch,
+                                    stepsLeft) {
+  let f = function(response) {
+    partialAction['nextActionId'] = response.next_action_id;
+    nextStep(ctxt, partialAction, dispatch, stepsLeft);
+  };
+  if (MOCK_BACKEND) {
+    let response = getNextActionIdBackendCallMock();
+    f(response);
+  }
+  else {
+    let path = `/users/${ctxt.uid}/actions/next_id`;
+    doFetch(path, {}, f);
+  }
+}
+
+function getHistoryBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
+  let f = function(response) {
+    partialAction['history'] = response.user_history;
+    nextStep(ctxt, partialAction, dispatch, stepsLeft);
+  };
+  if (MOCK_BACKEND) {
+    let response = getHistoryBackendCallMock();
+    f(response);
+  }
+  else {
+    console.log("Token: " + ctxt.token);
+    let path = `/users/${ctxt.uid}/history`;
+    let headers = new Headers({Token: ctxt.token});
+    doFetch(path, {headers}, f);
+  }
+}
+
+function addActionBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
+  let f = function(response) {
+    nextStep(ctxt, partialAction, dispatch, stepsLeft);
+  };
+  if (MOCK_BACKEND) {
+    let response = addActionBackendCallMock();
+    f(response);
+  }
+  else {
+    let path = `/users/${ctxt.uid}/actions/${ctxt.nextActionId}`;
+    let body = JSON.stringify({
+      section: ctxt.section,
+      action_type: ctxt.actionType,
+      score: ctxt.score
+    });
+    let method = 'put';
+    let headers = new Headers({
+      Token: ctxt.token,
+      'Content-Type': 'application/json'
+    });
+    doFetch(path, {method, body, headers}, f);
+  }
+}
+
+
+
+
+// -----------------------------------------------------------------------------
+// UTILS
+// -----------------------------------------------------------------------------
+
+function doFetch(path, options, resultFun) {
+ console.log("-------- Sending request");
+ console.log("Request URL path: " + path);
+ console.log(options);
+ fetch(uri(path), options)
+   .then(response => {
+     console.log("-------- Got response");
+     console.log("Status code: " + response.status);
+     return response.json();
+   })
+   .then(json => {
+     console.log(json);
+     return resultFun(json);
+   });
+}
+
+function uri(path) {
+  return 'http://52.51.179.41:8005' + path;
+}
+
+function isDateFromToday(staticInfoLastDate) {
+  return staticInfoLastDate.toDateString() == (new Date()).toDateString();
+}
+
+
+
+// -----------------------------------------------------------------------------
+// MOCK DATA
+// -----------------------------------------------------------------------------
+
+function getUserByEmailBackendCallMock() {
+  return getUserByEmailBackendCallMockNotFound();
+}
+
+function getUserByEmailBackendCallMockNotFound() {
   return {
     users: [],
     uid: "uid_new_foo"
   };
 }
 
-function getUserFoundMock() {
+function getUserByEmailBackendCallMockFound() {
   return {
     users: [{uid: "uid_not_new_foo"}]
   };
 }
 
-function loginBackendCall(uid, password) {
-  return loginValidPasswordMock();
+function loginBackendCallMock() {
+  return loginBackendCallMockValidPassword();
 }
 
-function loginValidPasswordMock() {
+function loginBackendCallMockValidPassword() {
   return {
-    token: "token_foo"
+    auth_token: "token_foo"
   };
 }
 
-function loginInvalidPasswordMock() {
+function loginBackendCallMockInalidPassword() {
   return {
     errors: [
       {code: "password_invalid"}
@@ -100,78 +351,13 @@ function loginInvalidPasswordMock() {
   };
 }
 
-function signupBackendCall(uid, email, password) {
-  return signupSuccessfulMock();
-}
-
-function signupSuccessfulMock() {
+function signupBackendCallMock() {
   return {
-    token: "token_foo"
-  }
-}
-
-export function openApp(staticInfoLastDate, uid, authToken) {
-  if (staticInfoLastDate != null && isDateFromToday(staticInfoLastDate)) {
-    return {
-      type: types.NO_ACTION
-    };
-  }
-  else {
-    let staticInfo = getStaticInfo();
-    let history = getHistoryBackendCall(uid, authToken);
-    return {
-      type: types.OPEN_APP,
-      fact: staticInfo.fact,
-      sections: staticInfo.sections,
-      actionTypes: staticInfo.actionTypes,
-      history: history.history
-    };
-  }
-}
-
-export function addAction(uid, nextActionId, section, actionType, score, authToken) {
-  createActionBackendCall(uid, nextActionId, section, actionType, score, authToken);
-  let nextACtionId = getNextActionIdBackendCall(uid);
-  let history = getHistoryBackendCall(uid, authToken)
-  return {
-    type: types.ADD_ACTION,
-    nextActionId: nextActionId,
-    history: history.history
+    auth_token: "token_foo"
   };
 }
 
-function createActionBackendCall(uid, nextActionId, section, actionType, score, authToken) {
-  let newAction = {
-    "id": "12",
-    "actionId": "asda",
-    "actionType": actionType,
-    "datetime": "2016-07-21",
-    "section": section,
-    "score": score
-  };
-}
-
-function getNextActionIdBackendCall(uid) {
-  return "3f45";
-}
-
-function isDateFromToday(staticInfoLastDate) {
-  return staticInfoLastDate.toDateString() == (new Date()).toDateString();
-}
-
-function getStaticInfo() {
-  let responseFact = getFactBackendCall();
-  console.log(responseFact);
-  let responseSections = getSectionsBackendCall();
-  let responseActionTypes = getActionTypesBackendcall();
-  return {
-    fact: responseFact.fact,
-    sections: responseSections.sections,
-    actionTypes: responseActionTypes.actionTypes,
-  };
-}
-
-function getHistoryBackendCall(uid, authToken) {
+function getHistoryBackendCallMock() {
   let history = [
     {
       id: "0",
@@ -295,169 +481,188 @@ function getHistoryBackendCall(uid, authToken) {
     }
   ];
   return {
-    history: history
+    user_history: history
   };
 }
 
-function getSectionsBackendCall() {
+function getSectionActionTypesBackendCallMock(section) {
+ if (section == 'transportation') {
+   return {
+     action_types: [
+       {
+         id: "bike",
+         display: "Bike",
+         points: 10
+       },
+       {
+         id: "car",
+         display: "Car",
+         points: -5
+       },
+       {
+         id: "public_transport",
+         display: "Public transport",
+         points: 5
+       },
+       {
+         id: "plane",
+         display: "Plane",
+         points: -15
+       }
+     ]
+   };
+ }
+ else if (section == 'water') {
+   return {
+     action_types: [
+       {
+         id: "short_shower",
+         display: "Short shower",
+         points: 5
+       },
+       {
+         id: "long_shower",
+         display: "Long Shower",
+         points: -5
+       },
+       {
+         id: "bath",
+         display: "Bath",
+         points: -10
+       },
+       {
+         id: "cold_water",
+         display: "Cold water",
+         points: 5
+       }
+     ]
+   };
+ }
+ else if (section == 'food') {
+   return {
+     action_types: [
+       {
+         id: "meat",
+         display: "Meat",
+         points: -10
+       },
+       {
+         id: "no_meat",
+         display: "No meat",
+         points: 10
+       },
+       {
+         id: "fish",
+         display: "Fish",
+         points: -5
+       },
+       {
+         id: "no_fish",
+         display: "No fish",
+         points: 5
+       }
+     ]
+   };
+ }
+ else if (section == 'temperature') {
+   return {
+     action_types: [
+       {
+         id: "heating",
+         display: "Heating",
+         points: -10
+       },
+       {
+         id: "cooling",
+         display: "Cooling",
+         points: -10
+       },
+       {
+         id: "window",
+         display: "Window",
+         points: 5
+       },
+       {
+         id: "sweater",
+         display: "Sweater",
+         points: 5
+       }
+     ]
+   };
+ }
+}
+
+function getFactBackendCallMock() {
+  let random = Math.floor((Math.random() * 4));
+  facts = [
+    {
+      id: 1,
+      display: "En el año 2050 habra mas plastico en el mar que peces."
+    },
+    {
+      id: 2,
+      display: "Aproximadamente un millón de aves y 100.000 mamíferos " +
+        "mueren cada año solo a causa de desechos plasticos."
+    },
+    {
+      id: 3,
+      display: "El contenido de una botella de plástico de un solo uso " +
+        "tiene una durabilidad de medio milenio. Es absurdo y carísimo."
+    },
+    {
+      id: 4,
+      display: "La contaminación del aire es el cuarto factor de riesgo " +
+        "de muerte en el mundo y con mucha diferencia el primer factor de " +
+        "riesgo ambiental de enfermedades."
+    }
+  ];
+  let fact = facts[random];
+  return {
+    fact: fact.display
+  };
+}
+
+function getSectionsBackendCallMock() {
   let sections = [
-  		{
-    		"id": "food",
-    		"display": "Food",
-        "info": "When land is used to raise animals instead of crops, precious water and soil are lost, trees are cut down to make land for grazing or factory-farm sheds, and untreated animal waste pollutes rivers and streams. In fact, it has such a devastating effect on all aspects of our environment that the Union of Concerned Scientists lists meat-eating as the second-biggest environmental hazard facing the Earth. (Number one is fossil-fuel vehicles.) And according to a report published by the Worldwatch Institute, a staggering 51 percent or more of global greenhouse-gas emissions are caused by animal agriculture."
-  		},
-  		{
-    		"id": "water",
-    		"display": "Water",
-        "info": ""
-  		},
-  		{
-    		"id": "transportation",
-    		"display": "Transportation",
-        "info": ""
-  		},
-  		{
-    		"id": "temperature",
-    		"display": "Temperature",
-        "info": ""
-  		}
-  	];
+    {
+      id: "food",
+      display: "Food",
+      info: "When land is used to raise animals instead of crops, precious " +
+        "water and soil are lost, trees are cut down to make land for grazing" +
+        "or factory-farm sheds, and untreated animal waste pollutes rivers " +
+        "and streams. In fact, it has such a devastating effect on all " +
+        "aspects of our environment that the Union of Concerned Scientists " +
+        "lists meat-eating as the second-biggest environmental hazard facing " +
+        "the Earth. (Number one is fossil-fuel vehicles.) And according to " +
+        "a report published by the Worldwatch Institute, a staggering 51 " +
+        "percent or more of global greenhouse-gas emissions are caused by " +
+        "animal agriculture."
+    },
+    {
+      id: "water",
+      display: "Water",
+      info: ""
+    },
+    {
+      id: "transportation",
+      display: "Transportation",
+      info: ""
+    },
+    {
+      id: "temperature",
+      display: "Temperature",
+      info: ""
+    }
+  ];
   return {
     sections: sections
   };
 }
 
-function getFactBackendCall() {
-  if(MOCK_BACKEND) {
-    let random = Math.floor((Math.random() * 4));
-    facts = [
-      {
-        "id": 1,
-        "display": "En el año 2050 habra mas plastico en el mar que peces."
-      },
-      {
-        "id": 2,
-        "display": "Aproximadamente un millón de aves y 100.000 mamíferos mueren cada año solo a causa de desechos plasticos."
-      },
-      {
-        "id": 3,
-        "display": "El contenido de una botella de plástico de un solo uso tiene una durabilidad de medio milenio. Es absurdo y carísimo."
-      },
-      {
-        "id": 4,
-        "display": "La contaminación del aire es el cuarto factor de riesgo de muerte en el mundo y con mucha diferencia el primer factor de riesgo ambiental de enfermedades."
-      }
-    ];
-    let fact = facts[random];
-    return {
-      fact: fact.display
-    };
-  }
-  else {
-    var request = new XMLHttpRequest();
-
-    request.open('GET', 'http://52.51.179.41:8005/facts');
-    request.setRequestHeader("Content-Type", "application/json");
-    request.send();
-    if (request.status == 200) {
-      console.log("hola");
-      dump(request.responseText);
-    }
-  }
+function getNextActionIdBackendCallMock() {
+  return {next_action_id: "3f45"};
 }
 
-function getActionTypesBackendcall() {
-  let action_types = {
-    transportation: [
-      {
-        "id": "bike",
-        "display": "Bike",
-        "points": 10
-       },
-       {
-        "id": "car",
-        "display": "Car",
-        "points": -5
-      },
-      {
-        "id": "public_transport",
-        "display": "Public transport",
-        "points": 5
-      },
-      {
-        "id": "plane",
-        "display": "Plane",
-        "points": -15
-      }
-    ],
-    water: [
-      {
-        "id": "short_shower",
-        "display": "Short shower",
-        "points": 5
-       },
-       {
-        "id": "long_shower",
-        "display": "Long Shower",
-        "points": -5
-      },
-      {
-        "id": "bath",
-        "display": "Bath",
-        "points": -10
-      },
-      {
-        "id": "cold_water",
-        "display": "Cold water",
-        "points": 5
-      }
-    ],
-    food: [
-      {
-        "id": "meat",
-        "display": "Meat",
-        "points": -10
-       },
-       {
-        "id": "no_meat",
-        "display": "No meat",
-        "points": 10
-      },
-      {
-        "id": "fish",
-        "display": "Fish",
-        "points": -5
-      },
-      {
-        "id": "no_fish",
-        "display": "No fish",
-        "points": 5
-      }
-    ],
-    temperature: [
-      {
-        "id": "heating",
-        "display": "Heating",
-        "points": -10
-       },
-       {
-        "id": "cooling",
-        "display": "Cooling",
-        "points": -10
-      },
-      {
-        "id": "window",
-        "display": "Window",
-        "points": 5
-      },
-      {
-        "id": "sweater",
-        "display": "Sweater",
-        "points": 5
-      }
-    ]
-  };
-  return {
-    actionTypes: action_types
-  };
+function addActionBackendCallMock(section, actionType, score) {
+  return {};
 }

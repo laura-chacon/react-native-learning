@@ -547,7 +547,6 @@ export default class Action extends Component {
             style={{backgroundColor: colors.MAIN_BACKGROUND_COLOR, flex: 1}}>
             {this._renderTextInfoSection(actionTypes[section.id], section)}
           </ScrollView>
-
         </Modal>
       );
     }
