@@ -1,5 +1,7 @@
 import * as types from './types';
 
+const MOCK_BACKEND = true;
+
 export function submitEmail(email) {
   let response = getUserByEmailBackendCall(email);
   if (response.users.length == 0) {
@@ -159,6 +161,7 @@ function isDateFromToday(staticInfoLastDate) {
 
 function getStaticInfo() {
   let responseFact = getFactBackendCall();
+  console.log(responseFact);
   let responseSections = getSectionsBackendCall();
   let responseActionTypes = getActionTypesBackendcall();
   return {
@@ -325,29 +328,42 @@ function getSectionsBackendCall() {
 }
 
 function getFactBackendCall() {
-  let random = Math.floor((Math.random() * 4));
-  facts = [
-    {
-    "id": 1,
-    "display": "En el año 2050 habra mas plastico en el mar que peces."
-    },
-    {
-    "id": 2,
-    "display": "Aproximadamente un millón de aves y 100.000 mamíferos mueren cada año solo a causa de desechos plasticos."
-    },
-    {
-    "id": 3,
-    "display": "El contenido de una botella de plástico de un solo uso tiene una durabilidad de medio milenio. Es absurdo y carísimo."
-    },
-    {
-    "id": 4,
-    "display": "La contaminación del aire es el cuarto factor de riesgo de muerte en el mundo y con mucha diferencia el primer factor de riesgo ambiental de enfermedades."
+  if(MOCK_BACKEND) {
+    let random = Math.floor((Math.random() * 4));
+    facts = [
+      {
+        "id": 1,
+        "display": "En el año 2050 habra mas plastico en el mar que peces."
+      },
+      {
+        "id": 2,
+        "display": "Aproximadamente un millón de aves y 100.000 mamíferos mueren cada año solo a causa de desechos plasticos."
+      },
+      {
+        "id": 3,
+        "display": "El contenido de una botella de plástico de un solo uso tiene una durabilidad de medio milenio. Es absurdo y carísimo."
+      },
+      {
+        "id": 4,
+        "display": "La contaminación del aire es el cuarto factor de riesgo de muerte en el mundo y con mucha diferencia el primer factor de riesgo ambiental de enfermedades."
+      }
+    ];
+    let fact = facts[random];
+    return {
+      fact: fact.display
+    };
+  }
+  else {
+    var request = new XMLHttpRequest();
+
+    request.open('GET', 'http://52.51.179.41:8005/facts');
+    request.setRequestHeader("Content-Type", "application/json");
+    request.send();
+    if (request.status == 200) {
+      console.log("hola");
+      dump(request.responseText);
     }
-  ];
-  let fact = facts[random];
-  return {
-    fact: fact.display
-  };
+  }
 }
 
 function getActionTypesBackendcall() {

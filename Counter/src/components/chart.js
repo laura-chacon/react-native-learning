@@ -97,21 +97,19 @@ export default class Facts extends Component {
   render() {
     let progression = this._getScoreProgression();
     const { title } = this.props;
+    /*
     progression = [[0,1], [1,3], [3,7], [4,9], [5, -10]];
+    */
+    progression = [["Positive", 30], ["Negative", 45]];
     return (
       <View style={styles.parent}>
         <NavigationBar
           title={title}/>
         <View style={styles.container}>
-          <LinearGradient colors={['#4c669f', '#3b5998', '#192f6a']} style={styles.linearGradient}>
-            <Text style={styles.buttonText}>
-              Sign in with Facebook
-            </Text>
-          </LinearGradient>
           <Chart
             style={styles.chart}
             data={progression}
-            type="line"
+            type="pie"
             />
         </View>
       </View>);

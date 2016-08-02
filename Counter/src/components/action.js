@@ -474,6 +474,7 @@ export default class Action extends Component {
       return (
         <CustomCell
           contentContainerStyle={{ height: 30}}
+          key={action}
           cellStyle="LeftDetail">
           <Text style={{
               flex: 1,
