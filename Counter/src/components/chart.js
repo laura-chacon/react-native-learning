@@ -105,7 +105,11 @@ export default class Facts extends Component {
           <Chart
             style={styles.chart}
             data={progression}
-            type="bar"
+            showDataPoint={true}
+            hideHorizontalGridLines={true}
+            hideVerticalGridLines={true}
+            xAxisHeight={10}
+            type="line"
             />
         </View>
       </View>);

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import NavigationBar from './navigationBar';
 import * as colors from  './colors';
+import { MOCK_BACKEND } from './../actions/creators';
 
 const styles = StyleSheet.create({
   listview_container: {
@@ -71,23 +72,45 @@ export default class History extends Component {
     var fun = function (acc, action) {
       if (acc[action.datetime]) {
         let data = acc[action.datetime];
-        data.actions.push({
-          section: action.section,
-          actionType: action.action_type,
-          actionId: action.action_id
-        });
+        if(MOCK_BACKEND) {
+          data.actions.push({
+            section: action.section,
+            actionType: action.actionType,
+            actionId: action.actionId
+          });
+        }
+        else {
+          data.actions.push({
+            section: action.section,
+            actionType: action.action_type,
+            actionId: action.action_id
+          });
+        }
         data.score = data.score + action.score;
         acc[action.datetime] = data;
       }
       else {
-        acc[action.datetime] = {
-          date: action.datetime,
-          actions: [{
-            section: action.section,
-            actionType: action.action_type,
-            actionId: action.action_id
-          }],
-          score: action.score
+        if(MOCK_BACKEND) {
+          acc[action.datetime] = {
+            date: action.datetime,
+            actions: [{
+              section: action.section,
+              actionType: action.actionType,
+              actionId: action.actionId
+            }],
+            score: action.score
+          }
+        }
+        else {
+          acc[action.datetime] = {
+            date: action.datetime,
+            actions: [{
+              section: action.section,
+              actionType: action.action_type,
+              actionId: action.action_id
+            }],
+            score: action.score
+          }
         }
       }
       return acc;
@@ -124,16 +147,7 @@ export default class History extends Component {
   }
 
   _getColorSection(section) {
-    switch(section) {
-      case "food":
-        return colors.FOOD_SECTION_COLOR;
-      case "water":
-        return colors.WATER_SECTION_COLOR;
-      case "transportation":
-        return colors.TRANSPORTATION_SECTION_COLOR;
-      case "temperature":
-        return colors.TEMPERATURE_SECTION_COLOR;
-    }
+    return eval("colors." + section.toUpperCase() + "_SECTION_COLOR");
   }
 
   _createSectionBox(section) {
@@ -145,7 +159,7 @@ export default class History extends Component {
     let color = this._getColorSection(section);
     return (
       <Text style={[styles.text_action, {color: color}]}>
-        {actionType}
+        {(actionType.charAt(0).toUpperCase() + actionType.slice(1)).replace("_", " ")}
       </Text>
     );
   }
@@ -166,6 +180,8 @@ export default class History extends Component {
   }
 
   _getDate(date) {
+    var d = date.split("-");
+    d = new Date(d[0], d[1]-1, d[2]);
     var date = new Date(date).toDateString();
     dateSplit = date.split(" ");
     let weekDay = 0;

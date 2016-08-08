@@ -1,6 +1,6 @@
 import * as types from './types';
 
-const MOCK_BACKEND = false;
+export const MOCK_BACKEND = true;
 
 
 // -----------------------------------------------------------------------------
@@ -286,12 +286,8 @@ function addActionBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
 
 function doFetch(path, options, resultFun) {
  fetch(uri(path), options)
-   .then(response => {
-     return response.json();
-   })
-   .then(json => {
-     return resultFun(json);
-   });
+   .then(response => response.json())
+   .then(json =>  resultFun(json))
 }
 
 function uri(path) {

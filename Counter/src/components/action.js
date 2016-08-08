@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   Animated,
   Dimensions,
   Image,
@@ -8,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {
@@ -85,7 +87,11 @@ const styles = StyleSheet.create({
   textOk: {
     fontSize: 16,
     fontStyle: 'italic',
-    color: colors.APP_COLOR
+    color: colors.APP_COLOR,
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 5,
+    paddingBottom: 5
   },
   // Score
   scoreContainerLabelText: {
@@ -188,8 +194,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginTop: 4
   },
-  // table
-
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 2,
+  }
 });
 
 export default class Action extends Component {
@@ -204,7 +213,9 @@ export default class Action extends Component {
       translateAnim: new Animated.Value(0),
       xPreviousPosition: 0,
       xPosition: 0,
-      modalVisible: false
+      modalVisible: false,
+      fadeAnimOkButton: new Animated.Value(1),
+      fadeAnimLoading: new Animated.Value(0)
     };
   }
 
@@ -291,8 +302,35 @@ export default class Action extends Component {
     }
   }
 
+  _startOpacityAnimationOkButton(valueToFade) {
+    Animated.timing(
+      this.state.fadeAnimOkButton,
+      {
+        toValue: valueToFade,
+      }
+    ).start();
+    setTimeout(() => this.setState({
+      fadeAnimOkButton: new Animated.Value(valueToFade)
+    }));
+  }
+
+  _startOpacityAnimationLoading(valueToFade) {
+    Animated.timing(
+      this.state.fadeAnimLoading,
+      {
+        toValue: valueToFade,
+        duration: 300
+      }
+    ).start();
+    setTimeout(() => this.setState({
+      fadeAnimLoading: new Animated.Value(valueToFade)
+    }), 300);
+  }
+
   _onOKPressed() {
     const { nextActionId, uid, token, addAction } = this.props;
+    this._startOpacityAnimationOkButton(0);
+    this._startOpacityAnimationLoading(1);
     addAction(
       uid,
       nextActionId,
@@ -301,6 +339,9 @@ export default class Action extends Component {
       this.state.pointsFromSelectedAction,
       token
     );
+    this._startOpacityAnimationLoading(0);
+    this._startOpacityAnimationOkButton(1);
+    console.log("hola");
   }
 
   setModalVisible(visible) {
@@ -438,8 +479,10 @@ export default class Action extends Component {
     if(this.state.selectedAction == null) {
       return (
         <Text style={
-            [styles.textOk,
-            {color: 'gray'}]}>OK</Text>
+          [styles.textOk,
+          {color: 'gray'}]}>
+          OK
+        </Text>
       );
     }
     else {
@@ -450,7 +493,21 @@ export default class Action extends Component {
           onPress={() => {
             this._onOKPressed();
           }}>
-          <Text style={styles.textOk}>OK</Text>
+          <View
+            style={{flexDirection: 'row'}}>
+            <Animated.View
+              style={{opacity: this.state.fadeAnimOkButton}}>
+              <Text style={styles.textOk}>OK</Text>
+            </Animated.View>
+            <Animated.View
+              style={{opacity: this.state.fadeAnimLoading}}>
+              <ActivityIndicator
+                animating={true}
+                style={[styles.centering, {height: 30}]}
+                size="small"
+                />
+            </Animated.View>
+          </View>
         </TouchableHighlight>
       );
     }
@@ -471,7 +528,6 @@ export default class Action extends Component {
 
   _renderActionInTable(actions) {
     let fun = function(action) {
-      console.log(action);
       return (
         <CustomCell
           contentContainerStyle={{ height: 30}}

@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   text: {
-    height: 150,
+    height: 250,
     width: 250,
     fontFamily: 'Helvetica',
     fontSize: 15,
