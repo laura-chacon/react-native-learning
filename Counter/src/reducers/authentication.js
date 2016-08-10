@@ -7,7 +7,8 @@ const initialState = {
   isEmailRegistered: false,
   uid: null,
   email: null,
-  error: null
+  error: null,
+  token: null
 };
 
 export default function authentication(state = initialState, action = {}) {

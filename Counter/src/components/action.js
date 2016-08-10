@@ -36,7 +36,7 @@ const LONG_SHOWER_ACTION_SELECTED_ICON = require('../img/water/shower_white@2x.p
 const LONG_SHOWER_ACTION_UNSELECTED_ICON = require('../img/water/shower_blue@2x.png');
 const BATH_ACTION_SELECTED_ICON = require('../img/water/bath_white@2x.png');
 const BATH_ACTION_UNSELECTED_ICON = require('../img/water/bath_blue@2x.png');
-const COLD_WATER_ACTION_SELECTED_ICON = require('../img/water/cold_water_white@2x.png');
+const COLD_WATER_ACTION_SELECTED_ICON = require('../img/water/cold_water_white.png');
 const COLD_WATER_ACTION_UNSELECTED_ICON = require('../img/water/cold_water_blue@2x.png');
 const BIKE_ACTION_SELECTED_ICON = require('../img/transportation/bike_white@2x.png');
 const BIKE_ACTION_UNSELECTED_ICON = require('../img/transportation/bike_green@2x.png');
@@ -215,7 +215,7 @@ export default class Action extends Component {
       xPosition: 0,
       modalVisible: false,
       fadeAnimOkButton: new Animated.Value(1),
-      fadeAnimLoading: new Animated.Value(0)
+      fadeAnimLoading: new Animated.Value(0),
     };
   }
 
@@ -307,11 +307,12 @@ export default class Action extends Component {
       this.state.fadeAnimOkButton,
       {
         toValue: valueToFade,
+        duration: 300
       }
     ).start();
     setTimeout(() => this.setState({
       fadeAnimOkButton: new Animated.Value(valueToFade)
-    }));
+    }), 300);
   }
 
   _startOpacityAnimationLoading(valueToFade) {
@@ -341,7 +342,6 @@ export default class Action extends Component {
     );
     this._startOpacityAnimationLoading(0);
     this._startOpacityAnimationOkButton(1);
-    console.log("hola");
   }
 
   setModalVisible(visible) {
@@ -492,20 +492,23 @@ export default class Action extends Component {
           underlayColor={null}
           onPress={() => {
             this._onOKPressed();
+            console.log("PRESS BUTTON");
           }}>
           <View
             style={{flexDirection: 'row'}}>
             <Animated.View
-              style={{opacity: this.state.fadeAnimOkButton}}>
-              <Text style={styles.textOk}>OK</Text>
-            </Animated.View>
-            <Animated.View
               style={{opacity: this.state.fadeAnimLoading}}>
+              {console.log("fade anim loading: " + this.state.fadeAnimLoading._value)}
               <ActivityIndicator
                 animating={true}
                 style={[styles.centering, {height: 30}]}
                 size="small"
                 />
+            </Animated.View>
+            <Animated.View
+              style={{opacity: this.state.fadeAnimOkButton}}>
+              {console.log("fade anim ok button: " + this.state.fadeAnimOkButton._value)}
+              <Text style={styles.textOk}>OK</Text>
             </Animated.View>
           </View>
         </TouchableHighlight>

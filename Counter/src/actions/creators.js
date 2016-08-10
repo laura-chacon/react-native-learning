@@ -1,6 +1,6 @@
 import * as types from './types';
 
-export const MOCK_BACKEND = true;
+export const MOCK_BACKEND = false;
 
 
 // -----------------------------------------------------------------------------
@@ -82,7 +82,6 @@ export function addAction(uid, nextActionId, section, actionType, score,
     nextStep(ctxt, {type}, dispatch, steps);
   };
 }
-
 
 
 // -----------------------------------------------------------------------------
@@ -286,8 +285,17 @@ function addActionBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
 
 function doFetch(path, options, resultFun) {
  fetch(uri(path), options)
-   .then(response => response.json())
-   .then(json =>  resultFun(json))
+   .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      else {
+        console.log(response);
+        let text = response.text();
+        console.log(text);
+      }
+   })
+   .then(json => resultFun(json))
 }
 
 function uri(path) {

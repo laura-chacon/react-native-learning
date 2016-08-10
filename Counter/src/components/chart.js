@@ -96,6 +96,7 @@ export default class Facts extends Component {
 
   render() {
     let progression = this._getScoreProgression();
+    console.log(progression);
     const { title } = this.props;
     return (
       <View style={styles.parent}>
@@ -106,9 +107,14 @@ export default class Facts extends Component {
             style={styles.chart}
             data={progression}
             showDataPoint={true}
+            color={colors.APP_COLOR}
+            axisColor={colors.BORDER_COLOR}
             hideHorizontalGridLines={true}
-            hideVerticalGridLines={true}
-            xAxisHeight={10}
+            hideVerticalGridLines={false}
+            dataPointFillColor={null}
+            dataPointColor={null}
+            xAxisHeight={50}
+            showXAxisLabels={false}
             type="line"
             />
         </View>
