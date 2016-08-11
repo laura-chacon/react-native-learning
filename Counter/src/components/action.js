@@ -216,7 +216,16 @@ export default class Action extends Component {
       modalVisible: false,
       fadeAnimOkButton: new Animated.Value(1),
       fadeAnimLoading: new Animated.Value(0),
+      historyLength: props.history.length,
     };
+  }
+
+  componentDidUpdate() {
+    if(this.state.historyLength < this.props.history.length) {
+      this._startOpacityAnimationLoading(0);
+      this._startOpacityAnimationOkButton(1);
+      this.setState({historyLength: this.props.history.length})
+    }
   }
 
   _startAnimation() {
@@ -320,12 +329,12 @@ export default class Action extends Component {
       this.state.fadeAnimLoading,
       {
         toValue: valueToFade,
-        duration: 300
+        duration: 500
       }
     ).start();
     setTimeout(() => this.setState({
       fadeAnimLoading: new Animated.Value(valueToFade)
-    }), 300);
+    }), 500);
   }
 
   _onOKPressed() {
@@ -340,8 +349,6 @@ export default class Action extends Component {
       this.state.pointsFromSelectedAction,
       token
     );
-    this._startOpacityAnimationLoading(0);
-    this._startOpacityAnimationOkButton(1);
   }
 
   setModalVisible(visible) {
@@ -475,7 +482,29 @@ export default class Action extends Component {
     );
   }
 
-  _renderOKButton(tab) {
+  _renderOKButton() {
+    return (
+        <Animated.View
+          style={{opacity: this.state.fadeAnimOkButton}}>
+          <Text style={styles.textOk}>OK</Text>
+        </Animated.View>
+    );
+  }
+
+  _renderLoading() {
+    return (
+      <Animated.View
+        style={{opacity: this.state.fadeAnimLoading}}>
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 30}]}
+          size="small"
+          />
+      </Animated.View>
+    );
+  }
+
+  _renderOKButtonAndLoading(tab) {
     if(this.state.selectedAction == null) {
       return (
         <Text style={
@@ -487,31 +516,18 @@ export default class Action extends Component {
     }
     else {
       return (
-        <TouchableHighlight
-          style={styles.okButton}
-          underlayColor={null}
-          onPress={() => {
-            this._onOKPressed();
-            console.log("PRESS BUTTON");
-          }}>
-          <View
-            style={{flexDirection: 'row'}}>
-            <Animated.View
-              style={{opacity: this.state.fadeAnimLoading}}>
-              {console.log("fade anim loading: " + this.state.fadeAnimLoading._value)}
-              <ActivityIndicator
-                animating={true}
-                style={[styles.centering, {height: 30}]}
-                size="small"
-                />
-            </Animated.View>
-            <Animated.View
-              style={{opacity: this.state.fadeAnimOkButton}}>
-              {console.log("fade anim ok button: " + this.state.fadeAnimOkButton._value)}
-              <Text style={styles.textOk}>OK</Text>
-            </Animated.View>
-          </View>
-        </TouchableHighlight>
+        <View
+          style={{flexDirection: 'row'}}>
+          {this._renderLoading()}
+          <TouchableHighlight
+            style={styles.okButton}
+            underlayColor={null}
+            onPress={() => {
+              this._onOKPressed();
+            }}>
+            {this._renderOKButton()}
+          </TouchableHighlight>
+        </View>
       );
     }
   }
@@ -619,7 +635,7 @@ export default class Action extends Component {
         {this._renderModal()}
         <NavigationBar
           title={title}
-          rightContainer={this._renderOKButton(selectedTab)}/>
+          rightContainer={this._renderOKButtonAndLoading(selectedTab)}/>
         {this._renderScore()}
         <View style={styles.horizontalLine}/>
         <SectionBar

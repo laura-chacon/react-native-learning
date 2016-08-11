@@ -276,9 +276,6 @@ function addActionBackendCall(ctxt, partialAction, dispatch, stepsLeft) {
   }
 }
 
-
-
-
 // -----------------------------------------------------------------------------
 // UTILS
 // -----------------------------------------------------------------------------
@@ -305,8 +302,6 @@ function uri(path) {
 function isDateFromToday(staticInfoLastDate) {
   return staticInfoLastDate.toDateString() == (new Date()).toDateString();
 }
-
-
 
 // -----------------------------------------------------------------------------
 // MOCK DATA
