@@ -217,6 +217,7 @@ export default class Action extends Component {
       fadeAnimOkButton: new Animated.Value(1),
       fadeAnimLoading: new Animated.Value(0),
       historyLength: props.history.length,
+      isOkPressed: false
     };
   }
 
@@ -224,7 +225,17 @@ export default class Action extends Component {
     if(this.state.historyLength < this.props.history.length) {
       this._startOpacityAnimationLoading(0);
       this._startOpacityAnimationOkButton(1);
-      this.setState({historyLength: this.props.history.length})
+      this.setState(
+        {historyLength: this.props.history.length},
+      )
+    }
+  }
+
+  componentWillUpdate() {
+    if(this.state.historyLength < this.props.history.length) {
+      this.setState(
+        {isOkPressed: false}
+      )
     }
   }
 
@@ -339,6 +350,7 @@ export default class Action extends Component {
 
   _onOKPressed() {
     const { nextActionId, uid, token, addAction } = this.props;
+    this.setState({isOkPressed: true});
     this._startOpacityAnimationOkButton(0);
     this._startOpacityAnimationLoading(1);
     addAction(
@@ -484,10 +496,17 @@ export default class Action extends Component {
 
   _renderOKButton() {
     return (
+      <TouchableHighlight
+        style={styles.okButton}
+        underlayColor={null}
+        onPress={() => {
+          this._onOKPressed();
+        }}>
         <Animated.View
           style={{opacity: this.state.fadeAnimOkButton}}>
           <Text style={styles.textOk}>OK</Text>
         </Animated.View>
+      </TouchableHighlight>
     );
   }
 
@@ -504,6 +523,15 @@ export default class Action extends Component {
     );
   }
 
+  _renderOKButtonOrLoading(){
+    if(this.state.isOkPressed) {
+      return this._renderLoading();
+    }
+    else {
+      return this._renderOKButton();
+    }
+  }
+
   _renderOKButtonAndLoading(tab) {
     if(this.state.selectedAction == null) {
       return (
@@ -518,15 +546,7 @@ export default class Action extends Component {
       return (
         <View
           style={{flexDirection: 'row'}}>
-          {this._renderLoading()}
-          <TouchableHighlight
-            style={styles.okButton}
-            underlayColor={null}
-            onPress={() => {
-              this._onOKPressed();
-            }}>
-            {this._renderOKButton()}
-          </TouchableHighlight>
+          {this._renderOKButtonOrLoading()}
         </View>
       );
     }
