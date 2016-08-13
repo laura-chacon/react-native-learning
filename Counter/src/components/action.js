@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Easing,
   Image,
   Modal,
   ScrollView,
@@ -54,6 +55,12 @@ const WINDOW_ACTION_SELECTED_ICON = require('../img/temperature/window_white@2x.
 const WINDOW_ACTION_UNSELECTED_ICON = require('../img/temperature/window_purple@2x.png');
 const SWEATER_ACTION_SELECTED_ICON = require('../img/temperature/sweater_white@2x.png');
 const SWEATER_ACTION_UNSELECTED_ICON = require('../img/temperature/sweater_purple@2x.png');
+const widthBoxScore = 33;
+const heightBoxScore = 33;
+const widthBoxScoreAnimated = 45;
+const heightBoxScoreAnimated = 45;
+const fontSizeScore = 14;
+const fontSizeScoreAnimated = 16;
 
 const styles = StyleSheet.create({
   // Main containers
@@ -100,10 +107,17 @@ const styles = StyleSheet.create({
     color: "lightslategray"
   },
   scoreContainerNumber: {
-    marginLeft: 5,
-    fontSize: 16,
-    color: colors.APP_COLOR,
+    fontSize: fontSizeScore,
+    color: colors.MAIN_BACKGROUND_COLOR,
     fontWeight: 'bold'
+  },
+  boxScoreContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.APP_COLOR,
+    borderRadius: 15,
+    width: widthBoxScore,
+    height: heightBoxScore
   },
 
   // Info Button
@@ -217,7 +231,10 @@ export default class Action extends Component {
       fadeAnimOkButton: new Animated.Value(1),
       fadeAnimLoading: new Animated.Value(0),
       historyLength: props.history.length,
-      isOkPressed: false
+      isOkPressed: false,
+      heightAnimated: new Animated.Value(heightBoxScore),
+      widthAnimated: new Animated.Value(widthBoxScore),
+      fontSizeAnimated: new Animated.Value(fontSizeScore),
     };
   }
 
@@ -225,6 +242,9 @@ export default class Action extends Component {
     if(this.state.historyLength < this.props.history.length) {
       this._startOpacityAnimationLoading(0);
       this._startOpacityAnimationOkButton(1);
+      this._startHeightScoreAnimation();
+      this._startWidthScoreAnimation();
+      this._startFontSizeScoreAnimation();
       this.setState(
         {historyLength: this.props.history.length},
       )
@@ -234,9 +254,52 @@ export default class Action extends Component {
   componentWillUpdate() {
     if(this.state.historyLength < this.props.history.length) {
       this.setState(
-        {isOkPressed: false}
+        {isOkPressed: false,
+        selectedAction: null}
       )
     }
+  }
+
+  _startFontSizeScoreAnimation() {
+    Animated.spring(
+      this.state.fontSizeAnimated,
+      {
+        toValue: fontSizeScoreAnimated,
+        easing: Easing.elastic(6),
+        duration: 450
+      }
+    ).start();
+    setTimeout(() => this.setState({
+      fontSizeAnimated: new Animated.Value(fontSizeScore)
+    }), 450);
+  }
+
+  _startHeightScoreAnimation() {
+    Animated.spring(
+      this.state.heightAnimated,
+      {
+        toValue: heightBoxScoreAnimated,
+        easing: Easing.elastic(6),
+        duration: 450
+      }
+    ).start();
+    setTimeout(() => this.setState({
+      heightAnimated: new Animated.Value(heightBoxScore)
+    }), 450);
+  }
+
+  _startWidthScoreAnimation() {
+    Animated.spring(
+      this.state.widthAnimated,
+      {
+        toValue: widthBoxScoreAnimated,
+        easing: Easing.elastic(6),
+        duration: 450
+      }
+    ).start();
+    setTimeout(() => this.setState({
+      widthAnimated: new Animated.Value(widthBoxScore)
+    }), 450);
   }
 
   _startAnimation() {
@@ -487,9 +550,23 @@ export default class Action extends Component {
         <Text style={styles.scoreContainerLabelText}>
           TOTAL SCORE
         </Text>
-        <Text style={styles.scoreContainerNumber}>
-          {this._calculateTotalScore()}
-        </Text>
+        <View style={{
+            width: widthBoxScoreAnimated,
+            height: heightBoxScoreAnimated,
+            justifyContent: 'center',
+            alignItems: 'center'}}>
+          <Animated.View style={
+              [styles.boxScoreContainer,
+              {height: this.state.heightAnimated,
+              width: this.state.widthAnimated}]}>
+            <Animated.Text style={
+                [styles.scoreContainerNumber,
+                {fontSize: this.state.fontSizeAnimated}
+              ]}>
+              {this._calculateTotalScore()}
+            </Animated.Text>
+          </Animated.View>
+        </View>
       </View>
     );
   }
