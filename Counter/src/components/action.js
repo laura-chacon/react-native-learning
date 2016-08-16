@@ -55,12 +55,12 @@ const WINDOW_ACTION_SELECTED_ICON = require('../img/temperature/window_white@2x.
 const WINDOW_ACTION_UNSELECTED_ICON = require('../img/temperature/window_purple@2x.png');
 const SWEATER_ACTION_SELECTED_ICON = require('../img/temperature/sweater_white@2x.png');
 const SWEATER_ACTION_UNSELECTED_ICON = require('../img/temperature/sweater_purple@2x.png');
-const widthBoxScore = 33;
-const heightBoxScore = 33;
-const widthBoxScoreAnimated = 45;
-const heightBoxScoreAnimated = 45;
-const fontSizeScore = 14;
-const fontSizeScoreAnimated = 16;
+const widthBoxScore = 40;
+const heightBoxScore = 40;
+const widthBoxscoreBackgroundColorAnimated = 45;
+const heightBoxscoreBackgroundColorAnimated = 45;
+const fontSizeScore = 16;
+const fontSizescoreBackgroundColorAnimated = 16;
 
 const styles = StyleSheet.create({
   // Main containers
@@ -103,19 +103,21 @@ const styles = StyleSheet.create({
   // Score
   scoreContainerLabelText: {
     marginRight: 5,
-    fontSize: 16,
+    fontSize: 15,
     color: "lightslategray"
   },
   scoreContainerNumber: {
     fontSize: fontSizeScore,
-    color: colors.MAIN_BACKGROUND_COLOR,
+    color: colors.APP_COLOR,
     fontWeight: 'bold'
   },
   boxScoreContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.APP_COLOR,
-    borderRadius: 15,
+    backgroundColor: colors.MAIN_BACKGROUND_COLOR,
+    borderRadius: 22,
+    borderWidth: 2.3,
+    borderColor: colors.APP_COLOR,
     width: widthBoxScore,
     height: heightBoxScore
   },
@@ -232,19 +234,21 @@ export default class Action extends Component {
       fadeAnimLoading: new Animated.Value(0),
       historyLength: props.history.length,
       isOkPressed: false,
-      heightAnimated: new Animated.Value(heightBoxScore),
-      widthAnimated: new Animated.Value(widthBoxScore),
-      fontSizeAnimated: new Animated.Value(fontSizeScore),
+      scoreBackgroundColorAnim: new Animated.Value(0),
+      currentScore: 0
+
     };
+  }
+
+  componentWillMount() {
+    this._calculateTotalScore();
   }
 
   componentDidUpdate() {
     if(this.state.historyLength < this.props.history.length) {
       this._startOpacityAnimationLoading(0);
       this._startOpacityAnimationOkButton(1);
-      this._startHeightScoreAnimation();
-      this._startWidthScoreAnimation();
-      this._startFontSizeScoreAnimation();
+      this._startColorScoreBoxAnimation();
       this.setState(
         {historyLength: this.props.history.length},
       )
@@ -260,46 +264,22 @@ export default class Action extends Component {
     }
   }
 
-  _startFontSizeScoreAnimation() {
-    Animated.spring(
-      this.state.fontSizeAnimated,
-      {
-        toValue: fontSizeScoreAnimated,
-        easing: Easing.elastic(6),
-        duration: 450
-      }
-    ).start();
-    setTimeout(() => this.setState({
-      fontSizeAnimated: new Animated.Value(fontSizeScore)
-    }), 450);
-  }
-
-  _startHeightScoreAnimation() {
-    Animated.spring(
-      this.state.heightAnimated,
-      {
-        toValue: heightBoxScoreAnimated,
-        easing: Easing.elastic(6),
-        duration: 450
-      }
-    ).start();
-    setTimeout(() => this.setState({
-      heightAnimated: new Animated.Value(heightBoxScore)
-    }), 450);
-  }
-
-  _startWidthScoreAnimation() {
-    Animated.spring(
-      this.state.widthAnimated,
-      {
-        toValue: widthBoxScoreAnimated,
-        easing: Easing.elastic(6),
-        duration: 450
-      }
-    ).start();
-    setTimeout(() => this.setState({
-      widthAnimated: new Animated.Value(widthBoxScore)
-    }), 450);
+  _startColorScoreBoxAnimation() {
+    let time = 500;
+    Animated.timing(this.state.scoreBackgroundColorAnim, {
+        toValue: 100,
+        duration: time
+    }).start();
+    setTimeout(() => {
+      this._calculateTotalScore();
+    }, 100);
+    setTimeout(() => {
+      Animated.timing(this.state.scoreBackgroundColorAnim, {
+        toValue: 0,
+        duration: time
+      }).start();
+    }
+    , time);
   }
 
   _startAnimation() {
@@ -335,7 +315,7 @@ export default class Action extends Component {
     let fun = function(acc, action) {
       return acc + action.score;
     }
-    return this.props.history.reduce(fun, 0);
+    this.state.currentScore = this.props.history.reduce(fun, 0);
   }
 
   _getSectionInfoButtonBackgroundColor(section) {
@@ -545,26 +525,25 @@ export default class Action extends Component {
   }
 
   _renderScore() {
+    var interpolatedColorAnimation = this.state.scoreBackgroundColorAnim.interpolate({
+      inputRange: [0, 100],
+      outputRange: ['rgba(248,248,255, 1)', 'rgba(32,178,170, 1)']
+    });
     return (
       <View style={styles.scoreContainer}>
         <Text style={styles.scoreContainerLabelText}>
           TOTAL SCORE
         </Text>
         <View style={{
-            width: widthBoxScoreAnimated,
-            height: heightBoxScoreAnimated,
             justifyContent: 'center',
             alignItems: 'center'}}>
           <Animated.View style={
               [styles.boxScoreContainer,
-              {height: this.state.heightAnimated,
-              width: this.state.widthAnimated}]}>
-            <Animated.Text style={
-                [styles.scoreContainerNumber,
-                {fontSize: this.state.fontSizeAnimated}
-              ]}>
-              {this._calculateTotalScore()}
-            </Animated.Text>
+              {backgroundColor: interpolatedColorAnimation}]}>
+            <Text style={
+                [styles.scoreContainerNumber]}>
+              {this.state.currentScore}
+            </Text>
           </Animated.View>
         </View>
       </View>
